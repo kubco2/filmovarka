@@ -2,6 +2,7 @@ package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +10,15 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import rx.subjects.PublishSubject;
+
 /**
  * Created by user on 10/4/16.
  */
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
+
+    private final PublishSubject<String> onClickSubject = PublishSubject.create();
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView nameTextView;
@@ -51,14 +56,25 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(MoviesAdapter.ViewHolder viewHolder, int position) {
-        Movie movie = mMovies.get(position);
+    public void onBindViewHolder(MoviesAdapter.ViewHolder viewHolder, final int position) {
+        final Movie movie = mMovies.get(position);
 
         TextView textView = viewHolder.nameTextView;
-        textView.setText(movie.getName());
+        textView.setText(movie.title);
         textView = viewHolder.ratingTextView;
-        textView.setText(movie.getRating().toString());
+        textView.setText("" + movie.popularity);
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)MoviesAdapter.this.getContext()).openDetails(movie);
+
+                onClickSubject.onNext("" + position);
+            }
+        });
     }
+
+
 
     @Override
     public int getItemCount() {
