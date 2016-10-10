@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context="uco374386.movio2.pv256.fi.muni.cz.filmovarka.DetailsActivity">
 
-    <fragment class="uco374386.movio2.pv256.fi.muni.cz.filmovarka.MovieFragment"
+    <FrameLayout
               android:id="@+id/details"
               android:layout_width="match_parent"
               android:layout_height="match_parent"

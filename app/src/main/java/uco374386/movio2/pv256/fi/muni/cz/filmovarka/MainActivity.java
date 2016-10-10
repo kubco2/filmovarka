@@ -3,6 +3,8 @@ package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -21,17 +23,39 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.setTheme(R.style.AppTheme);
         }
         setContentView(R.layout.activity_main);
+
+
+
+        if (findViewById(R.id.details) != null) {
+            if(savedInstanceState != null) {
+                return;
+            }
+            MovieFragment displayFrag = new MovieFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.details, displayFrag).commit();
+
+        }
     }
 
     public void openDetails(Movie movie) {
-        MovieFragment displayFrag = (MovieFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.details);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        MovieFragment displayFrag = (MovieFragment) fragmentManager.findFragmentById(R.id.details);
+
         if (displayFrag == null) {
             Intent intent = new Intent(this, DetailsActivity.class);
             intent.putExtra("movie", movie);
             startActivity(intent);
         } else {
-            displayFrag.updateContent(movie);
+            displayFrag = new MovieFragment();
+            Bundle data = new Bundle();
+            data.putParcelable("movie", movie);
+            displayFrag.setArguments(data);
+            fragmentTransaction.replace(R.id.details, displayFrag);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+
         }
     }
 }

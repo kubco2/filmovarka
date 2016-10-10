@@ -24,10 +24,23 @@ public class MovieFragment extends Fragment {
         return rootView;
     }
 
-    public void updateContent(Movie movie) {
-        TextView titleB = (TextView)rootView.findViewById(R.id.titleB);
-        TextView coverB = (TextView)rootView.findViewById(R.id.coverB);
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateContent();
+    }
+
+    public void updateContent() {
+        Bundle data = getArguments();
+        if(data == null) {
+            return;
+        }
+        Movie movie = data.getParcelable("movie");
+        if(movie == null) {
+            return;
+        }
+
+        TextView titleB = (TextView)rootView.findViewById(R.id.movieTitle);
         titleB.setText(movie.title);
-        coverB.setText(movie.coverPath);
     }
 }

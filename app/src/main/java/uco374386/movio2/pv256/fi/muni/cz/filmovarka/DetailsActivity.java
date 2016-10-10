@@ -10,8 +10,10 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        MovieFragment displayFrag = (MovieFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.details);
-        displayFrag.updateContent((Movie)getIntent().getParcelableExtra("movie"));
+        MovieFragment displayFrag = new MovieFragment();
+        displayFrag.setArguments(getIntent().getExtras());
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.details, displayFrag).commit();
     }
 }
