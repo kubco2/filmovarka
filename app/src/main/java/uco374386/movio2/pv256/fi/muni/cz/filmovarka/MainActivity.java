@@ -3,6 +3,7 @@ package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -16,10 +17,13 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     public static final String SECONDARY_THEME = "secondary_theme";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         boolean alternative = this.getPreferences(Context.MODE_PRIVATE).getBoolean(MainActivity.SECONDARY_THEME, false);
         Log.d("MainActivity", "Alternative theme " + alternative);
@@ -76,6 +80,49 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        Log.d(TAG, "onNavigationItemSelected");
         return false;
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onPostCreate");
+        super.onPostCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop");
+        super.onStop();
+    }
+
+    @Override
+    protected void onPostResume() {
+        Log.d(TAG, "onPostResume");
+        super.onPostResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause");
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume");
+        super.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart");
+        super.onStart();
     }
 }
