@@ -105,7 +105,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:clickable="true"
-        android:background="@color/colorAccent"
         app:layout_anchor="@id/viewA"
         app:layout_anchorGravity="bottom|right|end"/>
 </android.support.design.widget.CoordinatorLayout>
