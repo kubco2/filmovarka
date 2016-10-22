@@ -7,10 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import java.util.List;
-
-import rx.subjects.PublishSubject;
 
 /**
  * Created by user on 10/4/16.
@@ -18,7 +15,7 @@ import rx.subjects.PublishSubject;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
 
-    private final PublishSubject<String> onClickSubject = PublishSubject.create();
+    private static final String TAG = ListFragment.class.getSimpleName();
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView nameTextView;
@@ -46,17 +43,19 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
     @Override
     public MoviesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder");
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View movieView = inflater.inflate(R.layout.item_movie, parent, false);
-
+        //movieView.setOnClickListener();
         ViewHolder viewHolder = new ViewHolder(movieView);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(MoviesAdapter.ViewHolder viewHolder, final int position) {
+        Log.d(TAG, "onBindViewHolder");
         final Movie movie = mMovies.get(position);
 
         TextView textView = viewHolder.nameTextView;
@@ -68,8 +67,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
             @Override
             public void onClick(View v) {
                 ((MainActivity)MoviesAdapter.this.getContext()).openDetails(movie);
-
-                onClickSubject.onNext("" + position);
             }
         });
     }
