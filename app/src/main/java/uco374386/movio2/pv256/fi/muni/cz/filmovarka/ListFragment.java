@@ -1,7 +1,9 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,8 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieListResponse;
 
 /**
  * Created by user on 10/9/16.
@@ -25,16 +30,14 @@ public class ListFragment extends android.support.v4.app.Fragment {
     protected RecyclerView mRecyclerView;
     protected MoviesAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
-    protected List<Movie> mDataset;
+    protected MovieListResponse movieList;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        mDataset = new ArrayList<Movie>();
-        for(int i = 0; i < 30; i++) {
-            mDataset.add(new Movie(1,"/","Movie " + i,"",1));
-        }
+
+
     }
 
     @Override
@@ -42,16 +45,16 @@ public class ListFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
 
-        if(mDataset.isEmpty()) {
-            View rootView = inflater.inflate(R.layout.fragment_list_empty, container, false);
-            rootView.setTag(TAG);
-            return rootView;
-        }
-        if(!((MainActivity)getActivity()).isSystemOnline()) {
-            View rootView = inflater.inflate(R.layout.fragment_list_offline, container, false);
-            rootView.setTag(TAG);
-            return rootView;
-        }
+//        if(movieList == null || movieList.results.length == 0) {
+//            View rootView = inflater.inflate(R.layout.fragment_list_empty, container, false);
+//            rootView.setTag(TAG);
+//            return rootView;
+//        }
+//        if(!((MainActivity)getActivity()).isSystemOnline()) {
+//            View rootView = inflater.inflate(R.layout.fragment_list_offline, container, false);
+//            rootView.setTag(TAG);
+//            return rootView;
+//        }
 
         View rootView = inflater.inflate(R.layout.fragment_list, container, false);
         rootView.setTag(TAG);
@@ -59,8 +62,28 @@ public class ListFragment extends android.support.v4.app.Fragment {
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rvMovies);
         setRecyclerViewLayoutManager();
 
-        mAdapter = new MoviesAdapter(getContext(), mDataset);
+        mAdapter = new MoviesAdapter(getContext(), movieList);
         mRecyclerView.setAdapter(mAdapter);
+
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                try {
+                    movieList = MovieDbService.getInstance().getMostPopularMovies();
+                    ListFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mAdapter.setMovieList(movieList);
+                        }
+                    });
+                    //ListFragment.this.mRecyclerView.refreshDrawableState();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        task.execute();
 
         return rootView;
     }

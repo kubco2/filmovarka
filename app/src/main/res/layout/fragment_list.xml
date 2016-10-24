@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:textSize="24sp"
+        android:textSize="18sp"
         android:textAlignment="textStart"
         android:padding="18dp"/>
 

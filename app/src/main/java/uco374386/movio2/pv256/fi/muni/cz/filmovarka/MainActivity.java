@@ -2,8 +2,10 @@ package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -14,7 +16,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Display;
 import android.view.MenuItem;
+import android.view.WindowManager;
+
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
@@ -58,7 +64,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void openDetails(Movie movie) {
+    public void openDetails(MovieResponse movie) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -133,5 +139,13 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         Log.d(TAG, "onStart");
         super.onStart();
+    }
+
+    public static int getDisplayWidth(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return size.x;
     }
 }

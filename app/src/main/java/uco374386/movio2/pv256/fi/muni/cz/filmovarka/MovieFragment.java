@@ -9,9 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import com.squareup.picasso.Picasso;
+
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 /**
  * Created by user on 10/9/16.
@@ -43,13 +46,16 @@ public class MovieFragment extends Fragment {
         if(data == null) {
             return;
         }
-        Movie movie = data.getParcelable("movie");
+        MovieResponse movie = data.getParcelable("movie");
         if(movie == null) {
             return;
         }
 
         TextView titleB = (TextView)rootView.findViewById(R.id.movieTitle);
         titleB.setText(movie.title);
+
+        Picasso.with(getContext()).load(movie.getBackdropUrl("w1280")).into((ImageView) rootView.findViewById(R.id.backdrop_image));
+        Picasso.with(getContext()).load(movie.getPosterUrl("w1280")).into((ImageView) rootView.findViewById(R.id.poster_image));
     }
 
     @Override
