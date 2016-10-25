@@ -16,8 +16,6 @@ import uco374386.movio2.pv256.fi.muni.cz.filmovarka.MovieDbService;
 
 public class MovieResponse implements Parcelable {
 
-    private ConfigurationResponse configuration;
-
     @SerializedName("poster_path")
     public String coverPath;
     public boolean adult;
@@ -40,33 +38,25 @@ public class MovieResponse implements Parcelable {
     public boolean video;
     @SerializedName("vote_average")
     public double voteAverage;
-
-    public void setConfiguration(ConfigurationResponse configuration) {
-        this.configuration = configuration;
-    }
+    public String imageBasePath;
 
     public String getPosterUrl(String size) {
-        return MovieDbService.getInstance().getConfiguration().images.secureBaseUrl +
+        return imageBasePath +
                 ((size != null) ? size : "original") + coverPath;
     }
 
     public String getBackdropUrl(String size) {
-        return MovieDbService.getInstance().getConfiguration().images.secureBaseUrl +
+        return imageBasePath +
                 ((size != null) ? size : "original") + backdropPath;
     }
 
-    public String getMostSuitableBackdropUrl(Context context) {
-        return MovieDbService.getInstance().getConfiguration().images.secureBaseUrl +
-                configuration.getMostSuitableBackdropSize(context) +
-                backdropPath;
-    }
-
     private MovieResponse(Parcel in) {
-        String[] strings = new String[3];
+        String[] strings = new String[4];
         in.readStringArray(strings);
         this.coverPath = strings[0];
         this.title = strings[1];
         this.backdropPath = strings[2];
+        this.imageBasePath = strings[3];
         this.releaseDate = new Date(in.readLong());
         this.popularity = in.readFloat();
     }
@@ -81,7 +71,8 @@ public class MovieResponse implements Parcelable {
         dest.writeStringArray(new String[] {
                 this.coverPath,
                 this.title,
-                this.backdropPath
+                this.backdropPath,
+                this.imageBasePath
         });
         dest.writeLong(this.releaseDate.getTime());
         dest.writeFloat(this.popularity);

@@ -3,7 +3,6 @@ package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +14,7 @@ import android.view.ViewGroup;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieListResponse;
 
@@ -30,68 +29,58 @@ public class ListFragment extends android.support.v4.app.Fragment {
     protected RecyclerView mRecyclerView;
     protected MoviesAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
-    protected MovieListResponse movieList;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
-        super.onCreate(savedInstanceState);
-
-
-    }
+    protected AsyncTask loaderTask;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
 
-//        if(movieList == null || movieList.results.length == 0) {
-//            View rootView = inflater.inflate(R.layout.fragment_list_empty, container, false);
-//            rootView.setTag(TAG);
-//            return rootView;
-//        }
-//        if(!((MainActivity)getActivity()).isSystemOnline()) {
-//            View rootView = inflater.inflate(R.layout.fragment_list_offline, container, false);
-//            rootView.setTag(TAG);
-//            return rootView;
-//        }
-
-        View rootView = inflater.inflate(R.layout.fragment_list, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_list, container, false);
         rootView.setTag(TAG);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rvMovies);
         setRecyclerViewLayoutManager();
 
-        mAdapter = new MoviesAdapter(getContext(), movieList);
+        mAdapter = new MoviesAdapter(getContext(), new ArrayList<>());
         mRecyclerView.setAdapter(mAdapter);
 
-        AsyncTask task = new AsyncTask() {
+        loaderTask = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
                 try {
-                    movieList = MovieDbService.getInstance().getMostPopularMovies();
+                    MovieListResponse movieList1 = MovieDbService.getInstance().getMostPopularMovies();
+                    MovieListResponse movieList2 = MovieDbService.getInstance().getMostVotedMovies();
+                    final ArrayList<Object> items = new ArrayList<>(14);
+                    items.add(getResources().getString(R.string.sectionMostPopular));
+                    items.addAll(Arrays.asList(movieList1.results));
+                    items.add(getResources().getString(R.string.sectionMostVoted));
+                    items.addAll(Arrays.asList(movieList2.results));
                     ListFragment.this.getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mAdapter.setMovieList(movieList);
+                            if(!((MainActivity)getActivity()).isSystemOnline()) {
+                                mRecyclerView.setVisibility(View.GONE);
+                                rootView.findViewById(R.id.empty_view_no_internet).setVisibility(View.VISIBLE);
+                            } else if(items.size() <= 2) {
+                                mRecyclerView.setVisibility(View.GONE);
+                                rootView.findViewById(R.id.empty_view_no_data).setVisibility(View.VISIBLE);
+                            } else {
+                                mAdapter.setItems(items);
+                            }
                         }
                     });
-                    //ListFragment.this.mRecyclerView.refreshDrawableState();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 return null;
             }
         };
-        task.execute();
+        loaderTask.execute();
 
         return rootView;
     }
 
-    /**
-     * Set RecyclerView's LayoutManager to the one given.
-     *
-     */
     public void setRecyclerViewLayoutManager() {
         int scrollPosition = 0;
         if (mRecyclerView.getLayoutManager() != null) {
@@ -101,6 +90,12 @@ public class ListFragment extends android.support.v4.app.Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.scrollToPosition(scrollPosition);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -153,6 +148,7 @@ public class ListFragment extends android.support.v4.app.Fragment {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
+        loaderTask.cancel(true);
         super.onDestroy();
     }
 

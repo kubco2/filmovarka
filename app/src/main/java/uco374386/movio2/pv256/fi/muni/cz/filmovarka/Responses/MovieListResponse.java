@@ -8,20 +8,11 @@ import com.google.gson.annotations.SerializedName;
 
 public class MovieListResponse {
 
-    private ConfigurationResponse configuration;
-
     public int page;
     public MovieResponse[] results;
     @SerializedName("total_results")
     public int totalResults;
     @SerializedName("total_pages")
     public int totalPages;
-
-    public void setConfiguration(ConfigurationResponse configuration) {
-        this.configuration = configuration;
-        for(MovieResponse movie: results) {
-            movie.setConfiguration(configuration);
-        }
-    }
 
 }
