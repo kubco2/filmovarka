@@ -8,14 +8,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.MalformedJsonException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.ConfigurationResponse;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieListResponse;
 
 /**
@@ -48,31 +51,62 @@ public class ListFragment extends android.support.v4.app.Fragment {
         loaderTask = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
-                try {
-                    MovieListResponse movieList1 = MovieDbService.getInstance().getMostPopularMovies();
-                    MovieListResponse movieList2 = MovieDbService.getInstance().getMostVotedMovies();
-                    final ArrayList<Object> items = new ArrayList<>(14);
-                    items.add(getResources().getString(R.string.sectionMostPopular));
-                    items.addAll(Arrays.asList(movieList1.results));
-                    items.add(getResources().getString(R.string.sectionMostVoted));
-                    items.addAll(Arrays.asList(movieList2.results));
+                MovieListResponse movieList1 = null;
+                MovieListResponse movieList2 = null;
+                if(!((MainActivity)getActivity()).isSystemOnline()) {
                     ListFragment.this.getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(!((MainActivity)getActivity()).isSystemOnline()) {
-                                mRecyclerView.setVisibility(View.GONE);
-                                rootView.findViewById(R.id.empty_view_no_internet).setVisibility(View.VISIBLE);
-                            } else if(items.size() <= 2) {
-                                mRecyclerView.setVisibility(View.GONE);
-                                rootView.findViewById(R.id.empty_view_no_data).setVisibility(View.VISIBLE);
-                            } else {
-                                mAdapter.setItems(items);
-                            }
+                            mRecyclerView.setVisibility(View.GONE);
+                            rootView.findViewById(R.id.empty_view_no_internet).setVisibility(View.VISIBLE);
                         }
                     });
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+                try {
+                    MovieDbService service = MovieDbFactory.getMovieDbService();
+                    ConfigurationResponse configuration = service.getConfiguration().execute().body();
+                    movieList1 = service.getMostPopularMovies().execute().body();
+                    movieList1.setConfiguration(configuration);
+                    movieList2 = MovieDbFactory.getMovieDbService().getMostVotedMovies().execute().body();
+                    movieList2.setConfiguration(configuration);
+                } catch (MalformedJsonException e) {
+                    ListFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mRecyclerView.setVisibility(View.GONE);
+                            rootView.findViewById(R.id.empty_view_parse_error).setVisibility(View.VISIBLE);
+                        }
+                    });
+                    e.printStackTrace();
+                    return null;
+                } catch (IOException e) {
+                    ListFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mRecyclerView.setVisibility(View.GONE);
+                            rootView.findViewById(R.id.empty_view_no_internet).setVisibility(View.VISIBLE);
+                        }
+                    });
+                    e.printStackTrace();
+                    return null;
+                }
+
+                final ArrayList<Object> items = new ArrayList<>(14);
+                items.add(getResources().getString(R.string.sectionMostPopular));
+                items.addAll(Arrays.asList(movieList1.getResults()));
+                items.add(getResources().getString(R.string.sectionMostVoted));
+                items.addAll(Arrays.asList(movieList2.getResults()));
+                ListFragment.this.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                         if(items.size() <= 2) {
+                            mRecyclerView.setVisibility(View.GONE);
+                            rootView.findViewById(R.id.empty_view_no_data).setVisibility(View.VISIBLE);
+                        } else {
+                            mAdapter.setItems(items);
+                        }
+                    }
+                });
                 return null;
             }
         };

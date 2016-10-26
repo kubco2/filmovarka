@@ -9,10 +9,25 @@ import com.google.gson.annotations.SerializedName;
 public class MovieListResponse {
 
     public int page;
-    public MovieResponse[] results;
+    private MovieResponse[] results;
     @SerializedName("total_results")
     public int totalResults;
     @SerializedName("total_pages")
     public int totalPages;
 
+    private ConfigurationResponse configuration = null;
+
+    public void setConfiguration(ConfigurationResponse configuration) {
+        this.configuration = configuration;
+    }
+
+    public MovieResponse[] getResults() {
+        if(configuration == null) {
+            throw new IllegalStateException("Configuration is null");
+        }
+        for(MovieResponse item: results) {
+            item.imageBasePath = configuration.images.secureBaseUrl;
+        }
+        return results;
+    }
 }
