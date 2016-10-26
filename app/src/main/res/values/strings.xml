@@ -6,6 +6,8 @@
     <string name="no_internet_connection">No internet connection</string>
     <string name="no_data">There is no movie</string>
     <string name="parse_error">Parsing error :-(</string>
+    <string name="download_start">Downloading started</string>
+    <string name="download_finish">Downloading finished</string>
     <string name="sectionMostPopular">Most popular movies</string>
     <string name="sectionNew">New movies</string>
     <string name="sectionMostVoted">Most voted movies</string>

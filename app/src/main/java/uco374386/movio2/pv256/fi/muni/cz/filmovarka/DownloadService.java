@@ -1,6 +1,9 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -49,7 +52,7 @@ public class DownloadService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String action = intent.getAction();
-
+        showDownloadStartNotification();
         try {
             if(serverConfiguration == null) {
                 serverConfiguration = service.getConfiguration().execute().body();
@@ -64,7 +67,6 @@ public class DownloadService extends IntentService {
                 default:
                     throw new IllegalArgumentException("action not recognized");
             }
-            return;
         } catch (MalformedJsonException e) {
             broadcastMovieListError(RESPONSE_ERROR_PARSE);
             e.printStackTrace();
@@ -74,6 +76,7 @@ public class DownloadService extends IntentService {
             e.printStackTrace();
             return;
         }
+        showDownloadFinishNotification();
     }
 
     private void broadcastMovies(MovieListResponse movieList, String action) {
@@ -88,6 +91,57 @@ public class DownloadService extends IntentService {
     private void broadcastMovieListError(String error) {
         Intent intent = new Intent(DOWNLOAD_SERVICE_INTENT);
         intent.putExtra(EXTRA_RESPONSE_ERROR, error);
+        showErrorNotification(error);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    private void showErrorNotification(String error) {
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        Notification.Builder n  = new Notification.Builder(this)
+                .setContentTitle(getResources().getText(R.string.app_name))
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(pIntent) //přesměruje nás do aplikace
+                .setAutoCancel(true);
+
+        switch (error) {
+            case RESPONSE_ERROR_OFFLINE:
+                n.setContentText(getResources().getText(R.string.no_internet_connection));
+                break;
+            case RESPONSE_ERROR_PARSE:
+                n.setContentText(getResources().getText(R.string.parse_error));
+                break;
+        }
+        NotificationManager notificationManager =  (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(0, n.build()); //0 udává číslo notifikace. Na některých zařízeních nefunguje jinačí int než 0.
+    }
+
+    private void showDownloadStartNotification() {
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        Notification.Builder n  = new Notification.Builder(this)
+                .setContentTitle(getResources().getText(R.string.app_name))
+                .setContentText(getResources().getText(R.string.download_start))
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(pIntent) //přesměruje nás do aplikace
+                .setAutoCancel(true);
+        NotificationManager notificationManager =  (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(0, n.build()); //0 udává číslo notifikace. Na některých zařízeních nefunguje jinačí int než 0.
+    }
+
+    private void showDownloadFinishNotification() {
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        Notification.Builder n  = new Notification.Builder(this)
+                .setContentTitle(getResources().getText(R.string.app_name))
+                .setContentText(getResources().getText(R.string.download_finish))
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(pIntent) //přesměruje nás do aplikace
+                .setAutoCancel(true);
+        NotificationManager notificationManager =  (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(0, n.build()); //0 udává číslo notifikace. Na některých zařízeních nefunguje jinačí int než 0.
     }
 }
