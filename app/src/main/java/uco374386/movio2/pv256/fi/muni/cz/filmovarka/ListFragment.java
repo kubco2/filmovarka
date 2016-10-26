@@ -1,25 +1,24 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.MalformedJsonException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.IOException;
-import java.net.ConnectException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.ConfigurationResponse;
-import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieListResponse;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 /**
  * Created by user on 10/9/16.
@@ -32,7 +31,8 @@ public class ListFragment extends android.support.v4.app.Fragment {
     protected RecyclerView mRecyclerView;
     protected MoviesAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
-    protected AsyncTask loaderTask;
+    private View rootView;
+    private ArrayList<Object> items = new ArrayList<>(14);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,75 +42,25 @@ public class ListFragment extends android.support.v4.app.Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_list, container, false);
         rootView.setTag(TAG);
 
+        if(!((MainActivity)getActivity()).isSystemOnline()) {
+            mRecyclerView.setVisibility(View.GONE);
+            rootView.findViewById(R.id.empty_view_no_internet).setVisibility(View.VISIBLE);
+        }
+
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rvMovies);
         setRecyclerViewLayoutManager();
 
         mAdapter = new MoviesAdapter(getContext(), new ArrayList<>());
         mRecyclerView.setAdapter(mAdapter);
 
-        loaderTask = new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                MovieListResponse movieList1 = null;
-                MovieListResponse movieList2 = null;
-                if(!((MainActivity)getActivity()).isSystemOnline()) {
-                    ListFragment.this.getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mRecyclerView.setVisibility(View.GONE);
-                            rootView.findViewById(R.id.empty_view_no_internet).setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
-                try {
-                    MovieDbService service = MovieDbFactory.getMovieDbService();
-                    ConfigurationResponse configuration = service.getConfiguration().execute().body();
-                    movieList1 = service.getMostPopularMovies().execute().body();
-                    movieList1.setConfiguration(configuration);
-                    movieList2 = MovieDbFactory.getMovieDbService().getMostVotedMovies().execute().body();
-                    movieList2.setConfiguration(configuration);
-                } catch (MalformedJsonException e) {
-                    ListFragment.this.getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mRecyclerView.setVisibility(View.GONE);
-                            rootView.findViewById(R.id.empty_view_parse_error).setVisibility(View.VISIBLE);
-                        }
-                    });
-                    e.printStackTrace();
-                    return null;
-                } catch (IOException e) {
-                    ListFragment.this.getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mRecyclerView.setVisibility(View.GONE);
-                            rootView.findViewById(R.id.empty_view_no_internet).setVisibility(View.VISIBLE);
-                        }
-                    });
-                    e.printStackTrace();
-                    return null;
-                }
+        this.rootView = rootView;
 
-                final ArrayList<Object> items = new ArrayList<>(14);
-                items.add(getResources().getString(R.string.sectionMostPopular));
-                items.addAll(Arrays.asList(movieList1.getResults()));
-                items.add(getResources().getString(R.string.sectionMostVoted));
-                items.addAll(Arrays.asList(movieList2.getResults()));
-                ListFragment.this.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                         if(items.size() <= 2) {
-                            mRecyclerView.setVisibility(View.GONE);
-                            rootView.findViewById(R.id.empty_view_no_data).setVisibility(View.VISIBLE);
-                        } else {
-                            mAdapter.setItems(items);
-                        }
-                    }
-                });
-                return null;
-            }
-        };
-        loaderTask.execute();
+        Intent intent = new Intent(getContext(), DownloadService.class);
+        intent.setAction(DownloadService.ACTION_DOWNLOAD_LIST_MOST_POPULAR);
+        getContext().startService(intent);
+        intent = new Intent(getContext(), DownloadService.class);
+        intent.setAction(DownloadService.ACTION_DOWNLOAD_LIST_MOST_VOTED);
+        getContext().startService(intent);
 
         return rootView;
     }
@@ -130,6 +80,9 @@ public class ListFragment extends android.support.v4.app.Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+
+        IntentFilter intentFilter = new IntentFilter(DownloadService.DOWNLOAD_SERVICE_INTENT);
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMovieListReceiver, intentFilter);
     }
 
     @Override
@@ -182,8 +135,10 @@ public class ListFragment extends android.support.v4.app.Fragment {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
-        loaderTask.cancel(true);
         super.onDestroy();
+        Intent intent = new Intent(getContext(), DownloadService.class);
+        getContext().stopService(intent);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mMovieListReceiver);
     }
 
     @Override
@@ -197,4 +152,42 @@ public class ListFragment extends android.support.v4.app.Fragment {
         Log.d(TAG, "onDetach");
         super.onDetach();
     }
+
+    private BroadcastReceiver mMovieListReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String error = intent.getStringExtra(DownloadService.EXTRA_RESPONSE_ERROR);
+            if(error != null) {
+                switch (error) {
+                    case DownloadService.RESPONSE_ERROR_OFFLINE:
+                        mRecyclerView.setVisibility(View.GONE);
+                        rootView.findViewById(R.id.empty_view_no_internet).setVisibility(View.VISIBLE);
+                        break;
+                    case DownloadService.RESPONSE_ERROR_PARSE:
+                        mRecyclerView.setVisibility(View.GONE);
+                        rootView.findViewById(R.id.empty_view_parse_error).setVisibility(View.VISIBLE);
+                        break;
+                }
+                return;
+            }
+            String action = intent.getStringExtra(DownloadService.EXTRA_ACTION);
+            ArrayList<MovieResponse> movies = intent.getExtras().getParcelableArrayList(DownloadService.EXTRA_RESPONSE);
+            switch (action) {
+                case DownloadService.ACTION_DOWNLOAD_LIST_MOST_POPULAR:
+                    items.add(getResources().getString(R.string.sectionMostPopular));
+                    items.addAll(movies);
+                    break;
+                case DownloadService.ACTION_DOWNLOAD_LIST_MOST_VOTED:
+                    items.add(getResources().getString(R.string.sectionMostVoted));
+                    items.addAll(movies);
+                    break;
+            }
+            if(items.size() <= 2) {
+                mRecyclerView.setVisibility(View.GONE);
+                rootView.findViewById(R.id.empty_view_no_data).setVisibility(View.VISIBLE);
+            } else {
+                mAdapter.setItems(items);
+            }
+        }
+    };
 }
