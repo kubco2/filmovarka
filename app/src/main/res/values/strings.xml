@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Filmovarka</string>
+    <string name="navigation_drawer_head">Categories</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="cat1">cat1</string>
+    <string name="cat2">cat2</string>
+    <string name="cat3">cat3</string>
+    <string name="cat4">cat4</string>
+    <string name="cat5">cat5</string>
+    <string name="cat6">cat6</string>
 </resources>

@@ -2,24 +2,28 @@ package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.view.MenuItem;
 
-import java.util.ArrayList;
-import java.util.List;
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener{
 
-public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     public static final String SECONDARY_THEME = "secondary_theme";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         boolean alternative = this.getPreferences(Context.MODE_PRIVATE).getBoolean(MainActivity.SECONDARY_THEME, false);
         Log.d("MainActivity", "Alternative theme " + alternative);
@@ -30,38 +34,95 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
 
-        RecyclerView rvMovies = (RecyclerView) findViewById(R.id.rvMovies);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
 
-        List<Movie> movies = new ArrayList<Movie>();
-        for(int i = 0; i < 30; i++) {
-            movies.add(new Movie("Movie name " + i, (double)i));
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        if (findViewById(R.id.details) != null) {
+            if(savedInstanceState != null) {
+                return;
+            }
+            MovieFragment displayFrag = new MovieFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.details, displayFrag).commit();
+
         }
-
-        MoviesAdapter adapter = new MoviesAdapter(this, movies);
-        rvMovies.setAdapter(adapter);
-        rvMovies.setLayoutManager(new LinearLayoutManager(this));
-
-        Button themeButton = (Button) findViewById(R.id.button);
-        themeButton.setOnClickListener(new ThemeSwitcherListener());
     }
 
-    public class ThemeSwitcherListener implements View.OnClickListener{
+    public void openDetails(Movie movie) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        @Override
-        public void onClick(View v) {
-            SharedPreferences prefs = MainActivity.this.getPreferences(Context.MODE_PRIVATE);
-            boolean alternative = prefs.getBoolean(MainActivity.SECONDARY_THEME, false);
-            SharedPreferences.Editor editor = prefs.edit();
-            if (alternative) {
-                editor.putBoolean(MainActivity.SECONDARY_THEME, false);
-            } else {
-                editor.putBoolean(MainActivity.SECONDARY_THEME, true);
-            }
-            editor.commit();
-            Intent intent = new Intent();
-            intent.setClass(MainActivity.this, MainActivity.class);
-            MainActivity.this.startActivity(intent);
-            MainActivity.this.finish();
+        MovieFragment displayFrag = (MovieFragment) fragmentManager.findFragmentById(R.id.details);
+
+        if (displayFrag == null) {
+            Intent intent = new Intent(this, DetailsActivity.class);
+            intent.putExtra("movie", movie);
+            startActivity(intent);
+        } else {
+            displayFrag = new MovieFragment();
+            Bundle data = new Bundle();
+            data.putParcelable("movie", movie);
+            displayFrag.setArguments(data);
+            fragmentTransaction.replace(R.id.details, displayFrag);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+
         }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        Log.d(TAG, "onNavigationItemSelected");
+        return false;
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onPostCreate");
+        super.onPostCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop");
+        super.onStop();
+    }
+
+    @Override
+    protected void onPostResume() {
+        Log.d(TAG, "onPostResume");
+        super.onPostResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause");
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume");
+        super.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart");
+        super.onStart();
     }
 }

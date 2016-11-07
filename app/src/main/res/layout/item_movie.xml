@@ -3,9 +3,9 @@
               android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:paddingTop="10dp"
-              android:paddingBottom="10dp"
-        >
+              android:paddingTop="16dp"
+              android:paddingBottom="16dp"
+              android:paddingStart="16dp">
     <TextView
         android:id="@+id/movie_name"
         android:layout_width="0dp"
@@ -16,8 +16,6 @@
         android:id="@+id/movie_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
         android:textSize="10sp"
         />
 </LinearLayout>
