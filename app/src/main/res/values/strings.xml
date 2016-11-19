@@ -5,10 +5,4 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="no_data">There is no movie</string>
-    <string name="cat1">Action</string>
-    <string name="cat2">Family</string>
-    <string name="cat3">Comedy</string>
-    <string name="cat4">Crime</string>
-    <string name="cat5">Thriller</string>
-    <string name="cat6">Horror</string>
 </resources>
