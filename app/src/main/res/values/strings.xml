@@ -8,10 +8,4 @@
     <string name="sectionMostPopular">Most popular movies</string>
     <string name="sectionNew">New movies</string>
     <string name="sectionMostVoted">Most voted movies</string>
-    <string name="cat1">Action</string>
-    <string name="cat2">Family</string>
-    <string name="cat3">Comedy</string>
-    <string name="cat4">Crime</string>
-    <string name="cat5">Thriller</string>
-    <string name="cat6">Horror</string>
 </resources>
