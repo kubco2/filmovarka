@@ -1,16 +1,16 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import java.util.List;
-
-import rx.subjects.PublishSubject;
 
 /**
  * Created by user on 10/4/16.
@@ -18,7 +18,7 @@ import rx.subjects.PublishSubject;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
 
-    private final PublishSubject<String> onClickSubject = PublishSubject.create();
+    private static final String TAG = ListFragment.class.getSimpleName();
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView nameTextView;
@@ -27,8 +27,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         public ViewHolder(View itemView) {
             super(itemView);
 
-            nameTextView = (TextView) itemView.findViewById(R.id.movie_name);
-            ratingTextView = (TextView) itemView.findViewById(R.id.movie_rating);
+            nameTextView = (TextView) itemView.findViewById(R.id.movie_item_name);
+            ratingTextView = (TextView) itemView.findViewById(R.id.movie_item_rating);
         }
     }
 
@@ -46,6 +46,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
     @Override
     public MoviesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder");
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -56,7 +57,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(MoviesAdapter.ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(final MoviesAdapter.ViewHolder viewHolder, final int position) {
+        Log.d(TAG, "onBindViewHolder");
         final Movie movie = mMovies.get(position);
 
         TextView textView = viewHolder.nameTextView;
@@ -68,10 +70,20 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
             @Override
             public void onClick(View v) {
                 ((MainActivity)MoviesAdapter.this.getContext()).openDetails(movie);
-
-                onClickSubject.onNext("" + position);
             }
         });
+
+        Bitmap myBitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.placeholder);
+        if (myBitmap != null && !myBitmap.isRecycled()) {
+            Palette.from(myBitmap).generate(new Palette.PaletteAsyncListener() {
+                @Override
+                public void onGenerated(Palette palette) {
+                    View movieItemInfo = viewHolder.itemView.findViewById(R.id.movie_item_info);
+                    movieItemInfo.setBackgroundColor(palette.getDarkVibrantColor(0x000000));
+                    movieItemInfo.getBackground().setAlpha(128);
+                }
+            });
+        }
     }
 
 

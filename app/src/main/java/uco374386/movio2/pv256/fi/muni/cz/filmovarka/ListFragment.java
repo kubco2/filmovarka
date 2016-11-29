@@ -41,6 +41,18 @@ public class ListFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
+
+        if(mDataset.isEmpty()) {
+            View rootView = inflater.inflate(R.layout.fragment_list_empty, container, false);
+            rootView.setTag(TAG);
+            return rootView;
+        }
+        if(!((MainActivity)getActivity()).isSystemOnline()) {
+            View rootView = inflater.inflate(R.layout.fragment_list_offline, container, false);
+            rootView.setTag(TAG);
+            return rootView;
+        }
+
         View rootView = inflater.inflate(R.layout.fragment_list, container, false);
         rootView.setTag(TAG);
 
@@ -72,7 +84,7 @@ public class ListFragment extends android.support.v4.app.Fragment {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
     }
-    
+
     @Override
     public void onInflate(Context context, AttributeSet attrs, Bundle savedInstanceState) {
         Log.d(TAG, "onInflate");
