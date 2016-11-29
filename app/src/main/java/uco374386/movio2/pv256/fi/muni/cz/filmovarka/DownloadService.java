@@ -124,7 +124,7 @@ public class DownloadService extends IntentService {
         Notification.Builder n  = new Notification.Builder(this)
                 .setContentTitle(getResources().getText(R.string.app_name))
                 .setContentText(getResources().getText(R.string.download_start))
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_ondemand_video_black_24dp)
                 .setContentIntent(pIntent) //přesměruje nás do aplikace
                 .setAutoCancel(true);
         NotificationManager notificationManager =  (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -138,7 +138,7 @@ public class DownloadService extends IntentService {
         Notification.Builder n  = new Notification.Builder(this)
                 .setContentTitle(getResources().getText(R.string.app_name))
                 .setContentText(getResources().getText(R.string.download_finish))
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_ondemand_video_black_24dp)
                 .setContentIntent(pIntent) //přesměruje nás do aplikace
                 .setAutoCancel(true);
         NotificationManager notificationManager =  (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
