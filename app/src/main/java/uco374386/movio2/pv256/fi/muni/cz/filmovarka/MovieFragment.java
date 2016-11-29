@@ -55,7 +55,7 @@ public class MovieFragment extends Fragment {
         titleB.setText(movie.title);
 
         Picasso.with(getContext()).load(movie.getBackdropUrl("w1280")).into((ImageView) rootView.findViewById(R.id.backdrop_image));
-        Picasso.with(getContext()).load(movie.getPosterUrl("w1280")).into((ImageView) rootView.findViewById(R.id.poster_image));
+        Picasso.with(getContext()).load(movie.getPosterUrl("w342")).into((ImageView) rootView.findViewById(R.id.poster_image));
     }
 
     @Override
