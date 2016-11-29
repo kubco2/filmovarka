@@ -1,9 +1,12 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Window;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -14,6 +17,10 @@ public class DetailsActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         MovieFragment displayFrag = new MovieFragment();
         displayFrag.setArguments(getIntent().getExtras());
