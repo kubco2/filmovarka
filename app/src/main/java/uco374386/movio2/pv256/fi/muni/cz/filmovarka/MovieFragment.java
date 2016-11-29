@@ -3,6 +3,7 @@ package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbHelper;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbManager;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 /**
@@ -24,6 +27,7 @@ public class MovieFragment extends Fragment {
 
     private static final String TAG = MovieFragment.class.getSimpleName();
 
+    private MovieDbManager manager;
     View rootView;
 
     @Override
@@ -31,6 +35,7 @@ public class MovieFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
         rootView = inflater.inflate(R.layout.fragment_movie, container, false);
+        manager = new MovieDbManager(getContext());
         return rootView;
     }
 
@@ -46,16 +51,38 @@ public class MovieFragment extends Fragment {
         if(data == null) {
             return;
         }
-        MovieResponse movie = data.getParcelable("movie");
+        final MovieResponse movie = data.getParcelable("movie");
         if(movie == null) {
             return;
         }
 
-        TextView titleB = (TextView)rootView.findViewById(R.id.movieTitle);
-        titleB.setText(movie.title);
+        ((TextView)rootView.findViewById(R.id.movieTitle)).setText(movie.title);
+        ((TextView)rootView.findViewById(R.id.movieYear)).setText(MovieDbHelper.getDateString(movie.releaseDate));
+        rootView.findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean saved = manager.getMovie(movie.movieDbId) != null;
+                if(saved) {
+                    manager.deleteMovie(movie);
+                } else {
+                    manager.createMovie(movie);
+                }
+                updateFab(!saved);
+            }
+        });
+        updateFab(manager.getMovie(movie.movieDbId) != null);
 
         Picasso.with(getContext()).load(movie.getBackdropUrl("w1280")).into((ImageView) rootView.findViewById(R.id.backdrop_image));
         Picasso.with(getContext()).load(movie.getPosterUrl("w342")).into((ImageView) rootView.findViewById(R.id.poster_image));
+    }
+
+    private void updateFab(boolean saved) {
+        FloatingActionButton fab = ((FloatingActionButton) rootView.findViewById(R.id.fab));
+        if(saved) {
+            fab.setImageResource(R.drawable.ic_favorite_white_24dp);
+        } else {
+            fab.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+        }
     }
 
     @Override
