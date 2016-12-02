@@ -63,12 +63,13 @@ public class MovieResponse implements Parcelable {
     }
 
     public MovieResponse(Parcel in) {
-        String[] strings = new String[4];
+        String[] strings = new String[5];
         in.readStringArray(strings);
         this.coverPath = strings[0];
         this.title = strings[1];
         this.backdropPath = strings[2];
         this.imageBasePath = strings[3];
+        this.overview = strings[4];
         this.releaseDate = new Date(in.readLong());
         this.popularity = in.readFloat();
         this.movieDbId = in.readInt();
@@ -86,7 +87,8 @@ public class MovieResponse implements Parcelable {
                 this.coverPath,
                 this.title,
                 this.backdropPath,
-                this.imageBasePath
+                this.imageBasePath,
+                this.overview
         });
         dest.writeLong(this.releaseDate.getTime());
         dest.writeFloat(    this.popularity);
@@ -121,6 +123,7 @@ public class MovieResponse implements Parcelable {
         public static final String COLUMN_COVER_PATH_TEXT = "cover_path";
         public static final String COLUMN_BACKDROP_PATH_TEXT = "poster_path";
         public static final String COLUMN_IMAGE_BASE = "image_base";
+        public static final String COLUMN_OVERVIEW_TEXT = "overview";
 
         public static Uri buildMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
