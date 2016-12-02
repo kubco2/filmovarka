@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -33,18 +37,18 @@
         android:minHeight="139dp">
 
         <TextView
-            android:text="2016"
+            android:text=""
             android:textColor="@android:color/white"
             android:textSize="15sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/movieYear"
             app:layout_constraintLeft_toRightOf="@+id/movieDirector"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="0dp"
             app:layout_constraintBottom_toBottomOf="@+id/movieDirector"/>
 
         <TextView
-            android:text="Movie director"
+            android:text=""
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -56,7 +60,7 @@
             app:layout_constraintLeft_toLeftOf="@+id/movieTitle"/>
 
         <TextView
-            android:text="Movie title"
+            android:text=""
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -76,7 +80,7 @@
             app:layout_constraintGuide_begin="124dp"
             android:orientation="vertical"
             tools:layout_editor_absoluteY="0dp"
-            tools:layout_editor_absoluteX="140dp"/>
+            tools:layout_editor_absoluteX="124dp"/>
     </android.support.constraint.ConstraintLayout>
 
     <ImageView
@@ -102,4 +106,19 @@
         android:layout_marginEnd="16dp"
         app:layout_constraintRight_toRightOf="parent"/>
 
+    <TextView
+        android:text=""
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/overview"
+        android:layout_marginStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+        android:textSize="16sp"/>
+
 </android.support.constraint.ConstraintLayout>
+</ScrollView>

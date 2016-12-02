@@ -64,6 +64,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
 
         ((TextView)rootView.findViewById(R.id.movieTitle)).setText(movie.title);
         ((TextView)rootView.findViewById(R.id.movieYear)).setText(MovieDbHelper.getDateString(movie.releaseDate));
+        ((TextView)rootView.findViewById(R.id.overview)).setText(movie.overview);
         rootView.findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
