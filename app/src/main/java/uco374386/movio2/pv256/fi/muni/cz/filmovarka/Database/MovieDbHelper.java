@@ -39,10 +39,11 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieResponse.MovieEntry.COLUMN_MOVIEDB_ID + " INTEGER NOT NULL, " +
                 MovieResponse.MovieEntry.COLUMN_TITLE_TEXT + " TEXT NOT NULL," +
                 MovieResponse.MovieEntry.COLUMN_RELEASE_DATE_TEXT + " TEXT NOT NULL," +
-                MovieResponse.MovieEntry.COLUMN_VOTE_TEXT + " DOUBLE NOT NULL," +
-                MovieResponse.MovieEntry.COLUMN_POPULARITY_TEXT + " DOUBLE NOT NULL," +
+                MovieResponse.MovieEntry.COLUMN_VOTE_TEXT + " FLOAT NOT NULL," +
+                MovieResponse.MovieEntry.COLUMN_POPULARITY_TEXT + " FLOAT NOT NULL," +
                 MovieResponse.MovieEntry.COLUMN_BACKDROP_PATH_TEXT + " TEXT NOT NULL," +
                 MovieResponse.MovieEntry.COLUMN_COVER_PATH_TEXT + " TEXT NOT NULL," +
+                MovieResponse.MovieEntry.COLUMN_IMAGE_BASE + " TEXT NOT NULL," +
                 "UNIQUE (" + MovieResponse.MovieEntry.COLUMN_MOVIEDB_ID + ") ON CONFLICT REPLACE" +
                 " );";
         db.execSQL(SQL_CREATE_LOCATION_TABLE);

@@ -1,4 +1,4 @@
-package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
+package uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -17,6 +17,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.MainActivity;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.R;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 /**
@@ -25,7 +27,7 @@ import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = ListFragment.class.getSimpleName();
+    private static final String TAG = DiscoverListFragment.class.getSimpleName();
     private static final int TYPE_SECTION_NAME = 0;
     private static final int TYPE_MOVIE = 1;
     private ArrayList<Object> mItems;

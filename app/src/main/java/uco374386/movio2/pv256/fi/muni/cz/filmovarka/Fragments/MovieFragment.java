@@ -1,4 +1,4 @@
-package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
+package uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbHelper;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbManager;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.R;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 /**

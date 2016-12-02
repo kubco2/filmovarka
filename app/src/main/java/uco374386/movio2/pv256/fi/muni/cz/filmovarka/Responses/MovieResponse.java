@@ -1,7 +1,6 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses;
 
 import android.content.ContentUris;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -9,11 +8,7 @@ import android.provider.BaseColumns;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import uco374386.movio2.pv256.fi.muni.cz.filmovarka.MovieDbService;
 
 /**
  * Created by user on 10/23/16.
@@ -45,12 +40,12 @@ public class MovieResponse implements Parcelable {
     public String title;
     @SerializedName("backdrop_path")
     public String backdropPath;
-    public Double popularity;
+    public Float popularity;
     @SerializedName("vote_count")
     public int voteCount;
     public boolean video;
     @SerializedName("vote_average")
-    public Double voteAverage;
+    public Float voteAverage;
     public String imageBasePath;
 
     public MovieResponse() {
@@ -75,9 +70,9 @@ public class MovieResponse implements Parcelable {
         this.backdropPath = strings[2];
         this.imageBasePath = strings[3];
         this.releaseDate = new Date(in.readLong());
-        this.popularity = in.readDouble();
+        this.popularity = in.readFloat();
         this.movieDbId = in.readInt();
-        this.voteAverage = in.readDouble();
+        this.voteAverage = in.readFloat();
     }
 
     @Override
@@ -94,9 +89,9 @@ public class MovieResponse implements Parcelable {
                 this.imageBasePath
         });
         dest.writeLong(this.releaseDate.getTime());
-        dest.writeDouble(this.popularity);
-        dest.writeLong(this.movieDbId);
-        dest.writeDouble(this.voteAverage);
+        dest.writeFloat(    this.popularity);
+        dest.writeInt(this.movieDbId);
+        dest.writeFloat(this.voteAverage);
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
@@ -125,6 +120,7 @@ public class MovieResponse implements Parcelable {
         public static final String COLUMN_RELEASE_DATE_TEXT = "release_date";
         public static final String COLUMN_COVER_PATH_TEXT = "cover_path";
         public static final String COLUMN_BACKDROP_PATH_TEXT = "poster_path";
+        public static final String COLUMN_IMAGE_BASE = "image_base";
 
         public static Uri buildMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);

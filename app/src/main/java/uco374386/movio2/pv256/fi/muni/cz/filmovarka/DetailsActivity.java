@@ -1,12 +1,13 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Window;
+import android.view.MenuItem;
+
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.MovieFragment;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -69,5 +70,16 @@ public class DetailsActivity extends AppCompatActivity {
     protected void onStart() {
         Log.d(TAG, "onStart");
         super.onStart();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return(super.onOptionsItemSelected(item));
     }
 }
