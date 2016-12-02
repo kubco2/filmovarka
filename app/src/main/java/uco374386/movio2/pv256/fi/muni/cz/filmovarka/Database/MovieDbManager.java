@@ -129,31 +129,36 @@ public class MovieDbManager {
         }
 
         Cursor cursor = mContext.getContentResolver().query(MovieEntry.CONTENT_URI, MOVIE_COLUMNS, WHERE_MOVIEDB_ID, new String[]{movieDbId.toString()}, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            try {
-                return getMovie(cursor);
-            } finally {
-                cursor.close();
+        if (cursor != null) {
+            if(cursor.moveToFirst()) {
+                try {
+                    return getMovie(cursor);
+                } finally {
+                    cursor.close();
+                }
             }
+            cursor.close();
         }
         return null;
     }
 
     public List<MovieResponse> getAll() {
         Cursor cursor = mContext.getContentResolver().query(MovieEntry.CONTENT_URI, MOVIE_COLUMNS, null, null, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            List<MovieResponse> movies = new ArrayList<>(cursor.getCount());
-            try {
-                while (!cursor.isAfterLast()) {
-                    movies.add(getMovie(cursor));
-                    cursor.moveToNext();
+        if (cursor != null) {
+            if(cursor.moveToFirst()) {
+                List<MovieResponse> movies = new ArrayList<>(cursor.getCount());
+                try {
+                    while (!cursor.isAfterLast()) {
+                        movies.add(getMovie(cursor));
+                        cursor.moveToNext();
+                    }
+                } finally {
+                    cursor.close();
                 }
-            } finally {
-                cursor.close();
+                return movies;
             }
-            return movies;
+            cursor.close();
         }
-
         return Collections.emptyList();
     }
 
