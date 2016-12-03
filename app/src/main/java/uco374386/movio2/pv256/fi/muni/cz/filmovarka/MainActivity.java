@@ -19,9 +19,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.Display;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -94,11 +98,27 @@ public class MainActivity extends AppCompatActivity
 
     private void updateListFragment(boolean showSaved, ActionBarDrawerToggle toggle) {
         Fragment list;
+        ImageButton btn = (ImageButton)findViewById(R.id.refresh);
         if(showSaved) {
             list = new SavedListFragment();
+            btn.setVisibility(View.VISIBLE);
+
+            btn.setBackgroundResource(R.color.colorPrimary);
+            btn.setImageResource(R.drawable.ic_refresh_white_24dp);
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "requestSync");
+                    UpdaterSyncAdapter.syncImmediately(getApplicationContext());
+                    Toast toast = Toast.makeText(getApplicationContext(), R.string.request_sync, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            });
             toggle.setDrawerIndicatorEnabled(false);
         } else {
             list = new DiscoverListFragment();
+            btn.setVisibility(View.GONE);
+            btn.setOnClickListener(null);
             toggle.setDrawerIndicatorEnabled(true);
         }
         getSupportFragmentManager().beginTransaction()

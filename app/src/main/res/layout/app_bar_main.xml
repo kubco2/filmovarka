@@ -20,15 +20,22 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
             <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+                <ImageButton
+                    android:paddingLeft="0dp"
+                    android:visibility="gone"
+                    android:id="@+id/refresh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/refresh"/>
                 <Switch
                     android:text="@string/saved"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:id="@+id/saved"
+                    android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
                     android:checked="false"
                     android:textColor="@android:color/white"
                     android:splitTrack="false"
