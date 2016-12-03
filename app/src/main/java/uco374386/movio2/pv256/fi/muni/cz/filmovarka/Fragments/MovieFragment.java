@@ -20,7 +20,6 @@ import com.squareup.picasso.Picasso;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbHelper;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbManager;
-import uco374386.movio2.pv256.fi.muni.cz.filmovarka.MainActivity;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.R;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
@@ -40,7 +39,6 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
         rootView = inflater.inflate(R.layout.fragment_movie, container, false);
-
         return rootView;
     }
 
@@ -74,7 +72,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
                 } else {
                     manager.deleteMovie(movie);
                 }
-                updateViews(saved);
+                updateFab(saved);
             }
         });
         getLoaderManager().initLoader(1, null, this).forceLoad();
@@ -83,18 +81,12 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
         Picasso.with(getContext()).load(movie.getPosterUrl("w342")).into((ImageView) rootView.findViewById(R.id.poster_image));
     }
 
-    private void updateViews(boolean saved) {
+    private void updateFab(boolean saved) {
         FloatingActionButton fab = ((FloatingActionButton) rootView.findViewById(R.id.fab));
         if(saved) {
             fab.setImageResource(R.drawable.ic_favorite_white_24dp);
         } else {
             fab.setImageResource(R.drawable.ic_favorite_border_white_24dp);
-        }
-        if(getActivity() instanceof MainActivity) {
-            ListFragment list = (ListFragment)getFragmentManager().findFragmentById(R.id.list1);
-            if(list instanceof SavedListFragment) {
-                ((SavedListFragment) list).reload();
-            }
         }
     }
 
@@ -166,13 +158,11 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public void onLoadFinished(Loader<MovieResponse> loader, MovieResponse data) {
         saved = data != null;
-        updateViews(saved);
+        updateFab(saved);
     }
 
     @Override
-    public void onLoaderReset(Loader<MovieResponse> loader) {
-
-    }
+    public void onLoaderReset(Loader<MovieResponse> loader) {}
 
     static class MovieLoader extends AsyncTaskLoader<MovieResponse> {
         private long movieId;
@@ -186,6 +176,5 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
         public MovieResponse loadInBackground() {
             return new MovieDbManager(getContext()).getMovie((int)movieId);
         }
-
     }
 }

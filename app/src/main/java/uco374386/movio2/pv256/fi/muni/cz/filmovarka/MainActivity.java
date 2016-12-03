@@ -44,7 +44,8 @@ public class MainActivity extends AppCompatActivity
     public static final String SECONDARY_THEME = "secondary_theme";
     public static final String PROP_DISABLED_CATEGORIES = "disabled_categories";
     public static final String EXTR_CAT_ID = "category_id";
-    public static boolean tablet = false;
+    public boolean tablet = false;
+    public boolean firstLoad = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity
                     .add(R.id.details, displayFrag).commit();
         }
         updateListFragment(false, toggle);
+        firstLoad = false;
     }
 
     private void updateListFragment(boolean showSaved, ActionBarDrawerToggle toggle) {
@@ -118,6 +120,9 @@ public class MainActivity extends AppCompatActivity
             toggle.setDrawerIndicatorEnabled(false);
         } else {
             list = new DiscoverListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(DiscoverListFragment.EXTRA_SHOW_FIRST, firstLoad && tablet);
+            list.setArguments(bundle);
             btn.setVisibility(View.GONE);
             btn.setOnClickListener(null);
             toggle.setDrawerIndicatorEnabled(true);

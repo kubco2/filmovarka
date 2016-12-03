@@ -21,6 +21,8 @@ import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 public class DiscoverListFragment extends ListFragment {
 
+    public static final String EXTRA_SHOW_FIRST = "showFirst";
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -78,7 +80,7 @@ public class DiscoverListFragment extends ListFragment {
                 rootView.findViewById(R.id.empty_view_no_data).setVisibility(View.VISIBLE);
             } else {
                 mAdapter.setItems(items);
-                if(MainActivity.tablet) {
+                if(getArguments().getBoolean(EXTRA_SHOW_FIRST)) {
                     ((MainActivity) getActivity()).openDetails((MovieResponse) items.get(1));
                 }
             }

@@ -1,13 +1,15 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments;
 
 import android.content.Context;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbManager;
@@ -19,10 +21,19 @@ import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 public class SavedListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<MovieResponse>>{
 
+
+
     @Override
     public void onResume() {
         super.onResume();
         reload();
+        getContext().getContentResolver().registerContentObserver(MovieResponse.MovieEntry.CONTENT_URI, true, mObserver);
+    }
+
+    @Override
+    public void onDetach() {
+        getContext().getContentResolver().unregisterContentObserver(mObserver);
+        super.onDetach();
     }
 
     public void reload() {
@@ -52,9 +63,6 @@ public class SavedListFragment extends ListFragment implements LoaderManager.Loa
 
     static class MoviesLoader extends AsyncTaskLoader<List<MovieResponse>> {
 
-        private List<MovieResponse> mData;
-        public boolean hasResult = false;
-
         public MoviesLoader(Context context) {
             super(context);
         }
@@ -63,6 +71,12 @@ public class SavedListFragment extends ListFragment implements LoaderManager.Loa
         public List<MovieResponse> loadInBackground() {
             return new MovieDbManager(getContext()).getAll();
         }
-
     }
+
+    private ContentObserver mObserver = new ContentObserver(new Handler()) {
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            reload();
+        }
+    };
 }
