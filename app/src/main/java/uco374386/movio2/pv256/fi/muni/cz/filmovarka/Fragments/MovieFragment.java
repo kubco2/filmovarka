@@ -69,6 +69,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
             @Override
             public void onClick(View v) {
                 MovieDbManager manager = new MovieDbManager(getContext());
+                movie.overview="testo";
                 saved = !saved;
                 if(saved) {
                     manager.createMovie(movie);

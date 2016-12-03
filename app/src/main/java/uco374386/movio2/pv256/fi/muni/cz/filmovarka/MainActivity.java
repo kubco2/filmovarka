@@ -30,6 +30,7 @@ import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.DiscoverListFragme
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.MovieFragment;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.SavedListFragment;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Sync.UpdaterSyncAdapter;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+        UpdaterSyncAdapter.initializeSyncAdapter(this);
         boolean alternative = this.getPreferences(Context.MODE_PRIVATE).getBoolean(MainActivity.SECONDARY_THEME, false);
         Log.d("MainActivity", "Alternative theme " + alternative);
         if (alternative) {
