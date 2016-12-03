@@ -117,13 +117,13 @@ public class ListFragment extends android.support.v4.app.Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_list, container, false);
         rootView.setTag(TAG);
 
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rvMovies);
+        setRecyclerViewLayoutManager();
+
         if(!((MainActivity)getActivity()).isSystemOnline()) {
             mRecyclerView.setVisibility(View.GONE);
             rootView.findViewById(R.id.empty_view_no_internet).setVisibility(View.VISIBLE);
         }
-
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rvMovies);
-        setRecyclerViewLayoutManager();
 
         mAdapter = new MoviesAdapter(getContext(), new ArrayList<>());
         mRecyclerView.setAdapter(mAdapter);

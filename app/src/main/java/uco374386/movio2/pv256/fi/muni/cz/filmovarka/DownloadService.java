@@ -80,6 +80,9 @@ public class DownloadService extends IntentService {
     }
 
     private void broadcastMovies(MovieListResponse movieList, String action) {
+        if(movieList == null) {
+            return;
+        }
         Intent intent = new Intent(DOWNLOAD_SERVICE_INTENT);
         intent.putExtra(EXTRA_ACTION, action);
         movieList.setConfiguration(serverConfiguration);

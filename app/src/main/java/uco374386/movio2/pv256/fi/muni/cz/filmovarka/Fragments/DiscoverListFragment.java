@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.DownloadService;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.MainActivity;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.R;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
@@ -20,8 +22,9 @@ import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 public class DiscoverListFragment extends ListFragment {
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.d(TAG, "onAttach");
         IntentFilter intentFilter = new IntentFilter(DownloadService.DOWNLOAD_SERVICE_INTENT);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMovieListReceiver, intentFilter);
         Intent intent = new Intent(getContext(), DownloadService.class);
@@ -33,11 +36,12 @@ public class DiscoverListFragment extends ListFragment {
     }
 
     @Override
-    public void onPause() {
-        super.onDestroy();
+    public void onDetach() {
+        Log.d(TAG, "onDetach");
         Intent intent = new Intent(getContext(), DownloadService.class);
         getContext().stopService(intent);
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mMovieListReceiver);
+        super.onDetach();
     }
 
     protected BroadcastReceiver mMovieListReceiver = new BroadcastReceiver() {
@@ -74,6 +78,9 @@ public class DiscoverListFragment extends ListFragment {
                 rootView.findViewById(R.id.empty_view_no_data).setVisibility(View.VISIBLE);
             } else {
                 mAdapter.setItems(items);
+                if(MainActivity.tablet) {
+                    ((MainActivity) getActivity()).openDetails((MovieResponse) items.get(1));
+                }
             }
         }
     };

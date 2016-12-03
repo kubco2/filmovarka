@@ -22,6 +22,10 @@ public class SavedListFragment extends ListFragment implements LoaderManager.Loa
     @Override
     public void onResume() {
         super.onResume();
+        reload();
+    }
+
+    public void reload() {
         getLoaderManager().initLoader(0, null, this).forceLoad();
     }
 

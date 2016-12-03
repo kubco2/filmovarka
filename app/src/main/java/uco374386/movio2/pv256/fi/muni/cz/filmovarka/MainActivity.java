@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity
     public static final String SECONDARY_THEME = "secondary_theme";
     public static final String PROP_DISABLED_CATEGORIES = "disabled_categories";
     public static final String EXTR_CAT_ID = "category_id";
-
+    public static boolean tablet = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity
             return;
         }
         if (findViewById(R.id.details) != null) {
+            tablet = true;
             MovieFragment displayFrag = new MovieFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.details, displayFrag).commit();
