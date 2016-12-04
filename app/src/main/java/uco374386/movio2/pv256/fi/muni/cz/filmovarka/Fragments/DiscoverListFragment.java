@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -24,12 +26,22 @@ import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 public class DiscoverListFragment extends ListFragment {
     protected static final String TAG = DiscoverListFragment.class.getSimpleName();
     public static final String EXTRA_SHOW_FIRST = "showFirst";
+    public static final String EXTRA_LOAD_NEXT = "loadNext";
     private boolean loadNext = false;
     @Override
     public void onAttach(Context context) {
         Log.d(TAG, "onAttach");
         super.onAttach(context);
-        loadNext = getArguments().getBoolean(EXTRA_SHOW_FIRST);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(savedInstanceState != null) {
+            loadNext = savedInstanceState.getBoolean(EXTRA_LOAD_NEXT);
+        } else {
+            loadNext = getArguments().getBoolean(EXTRA_SHOW_FIRST);
+        }
         IntentFilter intentFilter = new IntentFilter(DownloadService.DOWNLOAD_SERVICE_INTENT);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMovieListReceiver, intentFilter);
     }
@@ -88,4 +100,10 @@ public class DiscoverListFragment extends ListFragment {
             }
         }
     };
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(EXTRA_LOAD_NEXT, loadNext);
+        super.onSaveInstanceState(outState);
+    }
 }

@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity
     public static final String SECONDARY_THEME = "secondary_theme";
     public static final String PROP_DISABLED_CATEGORIES = "disabled_categories";
     public static final String EXTR_CAT_ID = "category_id";
+    public static final String EXTRA_OPEN_SAVED = "openSaved";
+    public boolean openSaved = false;
     public boolean tablet = false;
     public boolean firstLoad = true;
     private boolean selectedCategoriesChanged = false;
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+        openSaved = getIntent().getExtras() != null && getIntent().getExtras().getBoolean(EXTRA_OPEN_SAVED, false);
         UpdaterSyncAdapter.initializeSyncAdapter(this);
         boolean alternative = this.getPreferences(Context.MODE_PRIVATE).getBoolean(MainActivity.SECONDARY_THEME, false);
         Log.d("MainActivity", "Alternative theme " + alternative);
@@ -78,17 +81,19 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         };
-
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-        toggle.setDrawerIndicatorEnabled(false);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        ((Switch)findViewById(R.id.saved)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        Switch switchButton = ((Switch)findViewById(R.id.saved));
+        switchButton.setChecked(openSaved);
+        switchButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                updateListFragment(isChecked, toggle);
+            public void onClick(View v) {
+                openSaved = ((Switch)v).isChecked();
+                updateListFragment(toggle);
             }
         });
 
@@ -109,11 +114,11 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.details, displayFrag).commit();
         }
-        updateListFragment(false, toggle);
+        updateListFragment(toggle);
         firstLoad = false;
     }
 
-    private void updateListFragment(boolean showSaved, ActionBarDrawerToggle toggle) {
+    private void updateListFragment(ActionBarDrawerToggle toggle) {
         Fragment list;
         ImageButton btn = (ImageButton)findViewById(R.id.refresh);
 
@@ -126,7 +131,7 @@ public class MainActivity extends AppCompatActivity
             findViewById(R.id.empty_view_no_internet).setVisibility(View.GONE);
         }
 
-        if(showSaved) {
+        if(openSaved) {
             list = new SavedListFragment();
             btn.setVisibility(View.VISIBLE);
 
@@ -161,6 +166,8 @@ public class MainActivity extends AppCompatActivity
         if (displayFrag == null) {
             Intent intent = new Intent(this, DetailsActivity.class);
             intent.putExtra("movie", movie);
+            intent.putExtra(EXTRA_OPEN_SAVED, openSaved);
+            finish();
             startActivity(intent);
         } else {
             Bundle data = new Bundle();

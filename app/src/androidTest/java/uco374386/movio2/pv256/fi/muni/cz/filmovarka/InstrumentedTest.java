@@ -1,5 +1,6 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 import android.content.Context;
+import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.FailureHandler;
@@ -9,6 +10,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,20 +34,13 @@ import static org.junit.Assert.fail;
 public class InstrumentedTest {
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(
-            MainActivity.class);
+    public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(MainActivity.class);
 
-
-    @Test
-    public void useAppContext() throws Exception {
-        // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
-        assertEquals("uco374386.movio2.pv256.fi.muni.cz.filmovarka", appContext.getPackageName());
-    }
+    private boolean tablet = false;
 
     @org.junit.Before
     public void setUp() throws Exception {
-        MovieDbManager mManager = new MovieDbManager(InstrumentationRegistry.getTargetContext());
+        tablet = mActivityRule.getActivity().tablet;
         InstrumentationRegistry.getTargetContext().getContentResolver().delete(
                 MovieResponse.MovieEntry.CONTENT_URI,
                 null,
@@ -55,7 +50,6 @@ public class InstrumentedTest {
 
     @Test
     public void testNavigation() throws InterruptedException {
-
         //download movies
         Thread.sleep(5000);
         //skip category name item
@@ -67,7 +61,7 @@ public class InstrumentedTest {
                     }
                 })
                 .perform(actionOnItemAtPosition(1, click()));
-        if(!mActivityRule.getActivity().tablet)
+        if(!tablet)
             Espresso.pressBack();
         //show saved
         onView(withId(R.id.saved))
@@ -86,6 +80,7 @@ public class InstrumentedTest {
                     }
                 })
                 .perform(actionOnItemAtPosition(0, click()));
+        assertTrue(true);
     }
 
     @Test
@@ -105,7 +100,7 @@ public class InstrumentedTest {
         //save movie
         onView(withId(R.id.fab))
                 .perform(click());
-        if(!mActivityRule.getActivity().tablet)
+        if(!tablet)
             Espresso.pressBack();
         //show saved
         onView(withId(R.id.saved))
@@ -123,7 +118,7 @@ public class InstrumentedTest {
         //unsave movie
         onView(withId(R.id.fab))
                 .perform(click());
-        if(!mActivityRule.getActivity().tablet)
+        if(!tablet)
             Espresso.pressBack();
         //load DB
         Thread.sleep(1000);
@@ -147,6 +142,9 @@ public class InstrumentedTest {
                     }
                 })
                 .perform(actionOnItemAtPosition(1, click()));
+        if(!tablet)
+            Espresso.pressBack();
+
         assertTrue(true);
     }
 }

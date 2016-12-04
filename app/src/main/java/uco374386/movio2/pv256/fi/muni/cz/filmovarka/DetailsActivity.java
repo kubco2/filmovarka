@@ -1,5 +1,6 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,10 +19,14 @@ public class DetailsActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
-        ((MovieFragment)getSupportFragmentManager().findFragmentById(R.id.details)).updateContent(getIntent().getExtras());
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(savedInstanceState != null) {
+            return;
+        }
+        ((MovieFragment)getSupportFragmentManager().findFragmentById(R.id.details)).updateContent(getIntent().getExtras());
+
     }
 
     @Override
@@ -71,10 +76,19 @@ public class DetailsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-                finish();
                 return true;
         }
-
         return(super.onOptionsItemSelected(item));
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(MainActivity.EXTRA_OPEN_SAVED, getIntent().getExtras().getBoolean(MainActivity.EXTRA_OPEN_SAVED));
+        finish();
+        startActivity(intent);
+    }
+
+
 }

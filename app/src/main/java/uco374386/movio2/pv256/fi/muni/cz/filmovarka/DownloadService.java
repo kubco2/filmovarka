@@ -64,12 +64,13 @@ public class DownloadService extends IntentService {
             if(serverConfiguration == null) {
                 serverConfiguration = service.getConfiguration().execute().body();
             }
+            String disabledCategories = getDisabledCategories();
             switch (action) {
                 case ACTION_DOWNLOAD_LIST_MOST_POPULAR:
-                    broadcastMovies(service.getMostPopularMovies(getDisabledCategories()).execute().body(), action, getResources().getString(R.string.sectionMostPopular));
+                    broadcastMovies(service.getMostPopularMovies(disabledCategories).execute().body(), action, getResources().getString(R.string.sectionMostPopular));
                     break;
                 case ACTION_DOWNLOAD_LIST_MOST_VOTED:
-                    broadcastMovies(service.getMostVotedMovies(getDisabledCategories()).execute().body(), action, getResources().getString(R.string.sectionMostVoted));
+                    broadcastMovies(service.getMostVotedMovies(disabledCategories).execute().body(), action, getResources().getString(R.string.sectionMostVoted));
                     break;
                 default:
                     throw new IllegalArgumentException("action not recognized");
@@ -162,6 +163,6 @@ public class DownloadService extends IntentService {
         for(String catid: cats) {
             result += catid + ",";
         }
-        return result;
+        return result.isEmpty() ? null : result.substring(0, result.length()-1);
     }
 }

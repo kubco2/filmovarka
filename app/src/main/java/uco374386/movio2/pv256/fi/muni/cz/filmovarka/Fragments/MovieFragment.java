@@ -112,7 +112,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
-        updateContent(getArguments());
+        updateContent(savedInstanceState != null ? savedInstanceState : getArguments());
     }
 
     @Override
@@ -185,5 +185,15 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
         }
     }
 
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
 
+        super.onViewStateRestored(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable("movie", movie);
+        super.onSaveInstanceState(outState);
+    }
 }
