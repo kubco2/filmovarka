@@ -68,7 +68,7 @@ public class DiscoverListFragment extends ListFragment {
                 rootView.findViewById(R.id.empty_view_no_data).setVisibility(View.GONE);
             }
             items.add(intent.getStringExtra(DownloadService.EXTRA_SECTION));
-            items.addAll(movies);
+            items.addAll(movies.subList(0,movies.size() > 6 ? 6 : movies.size()));
             mAdapter.setItems(items);
             if(loadNext) {
                 loadNext = false;
