@@ -1,8 +1,11 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka.Network;
 
+import java.util.Set;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.ConfigurationResponse;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieListResponse;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
@@ -22,13 +25,13 @@ public interface MovieDbService {
     public Call<MovieResponse> getMovie(@Path("id") int id);
 
     @GET("discover/movie?sort_by=popularity.desc&api_key=" + MovieDbService.API_KEY)
-    public Call<MovieListResponse> getMostPopularMovies();
+    public Call<MovieListResponse> getMostPopularMovies(@Query("without_genres") String withoutGenres);
 
     @GET("discover/movie?sort_by=release_date.desc&api_key=" + MovieDbService.API_KEY)
-    public Call<MovieListResponse> getNewMovies();
+    public Call<MovieListResponse> getNewMovies(@Query("without_genres") String withoutGenres);
 
     @GET("discover/movie?sort_by=vote_count.desc&api_key=" + MovieDbService.API_KEY)
-    public Call<MovieListResponse> getMostVotedMovies();
+    public Call<MovieListResponse> getMostVotedMovies(@Query("without_genres") String withoutGenres);
 
     @GET("configuration?api_key=" + MovieDbService.API_KEY)
     public Call<ConfigurationResponse> getConfiguration();

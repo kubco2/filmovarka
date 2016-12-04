@@ -69,6 +69,16 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         notifyDataSetChanged();
     }
 
+    public void addItems(ArrayList<Object> items) {
+        this.mItems.addAll(items);
+        notifyDataSetChanged();
+    }
+
+    public void reset() {
+        this.mItems = new ArrayList<>();
+        notifyDataSetChanged();
+    }
+
     private Context getContext() {
         return mContext;
     }

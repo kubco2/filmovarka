@@ -30,7 +30,6 @@ public class ListFragment extends android.support.v4.app.Fragment {
     protected MoviesAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
     protected View rootView;
-    protected ArrayList<Object> items = new ArrayList<>(14);
     protected ListClickable mCallback;
 
     @Override

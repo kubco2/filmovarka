@@ -10,6 +10,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.DownloadService;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.MainActivity;
@@ -31,12 +32,12 @@ public class DiscoverListFragment extends ListFragment {
         loadNext = getArguments().getBoolean(EXTRA_SHOW_FIRST);
         IntentFilter intentFilter = new IntentFilter(DownloadService.DOWNLOAD_SERVICE_INTENT);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMovieListReceiver, intentFilter);
-        Intent intent = new Intent(getContext(), DownloadService.class);
-        intent.setAction(DownloadService.ACTION_DOWNLOAD_LIST_MOST_POPULAR);
-        getContext().startService(intent);
-        intent = new Intent(getContext(), DownloadService.class);
-        intent.setAction(DownloadService.ACTION_DOWNLOAD_LIST_MOST_VOTED);
-        getContext().startService(intent);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        reload();
     }
 
     @Override
@@ -48,6 +49,16 @@ public class DiscoverListFragment extends ListFragment {
         super.onDetach();
     }
 
+    public void reload() {
+        mAdapter.reset();
+        Intent intent = new Intent(getContext(), DownloadService.class);
+        intent.setAction(DownloadService.ACTION_DOWNLOAD_LIST_MOST_POPULAR);
+        getContext().startService(intent);
+        intent = new Intent(getContext(), DownloadService.class);
+        intent.setAction(DownloadService.ACTION_DOWNLOAD_LIST_MOST_VOTED);
+        getContext().startService(intent);
+    }
+
     protected BroadcastReceiver mMovieListReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -56,9 +67,10 @@ public class DiscoverListFragment extends ListFragment {
                 mRecyclerView.setVisibility(View.GONE);
                 rootView.findViewById(R.id.empty_view_parse_error).setVisibility(View.VISIBLE);
             }
+            ArrayList<Object> items = new ArrayList<>();
             List<MovieResponse> movies = intent.getExtras().getParcelableArrayList(DownloadService.EXTRA_RESPONSE);
             if(movies == null || movies.isEmpty()) {
-                if(items.isEmpty()) {
+                if(mAdapter.getItemCount() == 0) {
                     mRecyclerView.setVisibility(View.GONE);
                     rootView.findViewById(R.id.empty_view_no_data).setVisibility(View.VISIBLE);
                 }
@@ -69,7 +81,7 @@ public class DiscoverListFragment extends ListFragment {
             }
             items.add(intent.getStringExtra(DownloadService.EXTRA_SECTION));
             items.addAll(movies.subList(0,movies.size() > 6 ? 6 : movies.size()));
-            mAdapter.setItems(items);
+            mAdapter.addItems(items);
             if(loadNext) {
                 loadNext = false;
                 mCallback.onItemClicked((MovieResponse) items.get(1));

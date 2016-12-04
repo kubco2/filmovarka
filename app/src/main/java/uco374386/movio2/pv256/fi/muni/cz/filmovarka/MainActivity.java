@@ -28,6 +28,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.DiscoverListFragment;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     public static final String EXTR_CAT_ID = "category_id";
     public boolean tablet = false;
     public boolean firstLoad = true;
+    private boolean selectedCategoriesChanged = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
@@ -65,7 +67,18 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                ListFragment listFragment = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.list1);
+                if(listFragment != null && listFragment instanceof DiscoverListFragment && selectedCategoriesChanged) {
+                    selectedCategoriesChanged = false;
+                    ((DiscoverListFragment) listFragment).reload();
+                }
+            }
+        };
+
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         toggle.setDrawerIndicatorEnabled(false);
@@ -184,6 +197,7 @@ public class MainActivity extends AppCompatActivity
             disabled.add(id);
         }
         setDisabledCategories(disabled);
+        selectedCategoriesChanged = true;
         return false;
     }
 
