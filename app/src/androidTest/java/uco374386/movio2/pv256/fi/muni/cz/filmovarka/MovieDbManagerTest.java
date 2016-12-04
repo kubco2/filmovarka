@@ -5,6 +5,7 @@ import android.test.AndroidTestCase;
 import java.util.Date;
 import java.util.List;
 
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbContract;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbManager;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
@@ -21,7 +22,7 @@ public class MovieDbManagerTest extends AndroidTestCase {
     protected void setUp() throws Exception {
         mManager = new MovieDbManager(mContext);
         mContext.getContentResolver().delete(
-                MovieResponse.MovieEntry.CONTENT_URI,
+                MovieDbContract.MovieEntry.CONTENT_URI,
                 null,
                 null
         );
@@ -30,7 +31,7 @@ public class MovieDbManagerTest extends AndroidTestCase {
     @Override
     public void tearDown() throws Exception {
         mContext.getContentResolver().delete(
-                MovieResponse.MovieEntry.CONTENT_URI,
+                MovieDbContract.MovieEntry.CONTENT_URI,
                 null,
                 null
         );

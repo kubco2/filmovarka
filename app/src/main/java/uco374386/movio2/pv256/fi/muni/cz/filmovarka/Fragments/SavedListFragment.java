@@ -2,7 +2,6 @@ package uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments;
 
 import android.content.Context;
 import android.database.ContentObserver;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.LoaderManager;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbContract;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbManager;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.R;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
@@ -29,7 +29,7 @@ public class SavedListFragment extends ListFragment implements LoaderManager.Loa
     public void onResume() {
         super.onResume();
         reload();
-        getContext().getContentResolver().registerContentObserver(MovieResponse.MovieEntry.CONTENT_URI, true, mObserver);
+        getContext().getContentResolver().registerContentObserver(MovieDbContract.MovieEntry.CONTENT_URI, true, mObserver);
     }
 
     @Override

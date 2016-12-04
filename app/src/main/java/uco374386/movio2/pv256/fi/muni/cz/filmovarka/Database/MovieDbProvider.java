@@ -11,8 +11,6 @@ import android.util.Log;
 
 import java.util.Arrays;
 
-import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
-
 /**
  * Created by user on 11/29/16.
  */
@@ -29,10 +27,10 @@ public class MovieDbProvider extends ContentProvider {
 
     private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
-        final String authority = MovieResponse.CONTENT_AUTHORITY;
+        final String authority = MovieDbContract.CONTENT_AUTHORITY;
 
-        matcher.addURI(authority, MovieResponse.PATH_MOVIE, MOVIE);
-        matcher.addURI(authority, MovieResponse.PATH_MOVIE + "/#", MOVIE_ID);
+        matcher.addURI(authority, MovieDbContract.PATH_MOVIE, MOVIE);
+        matcher.addURI(authority, MovieDbContract.PATH_MOVIE + "/#", MOVIE_ID);
 
         return matcher;
     }
@@ -50,9 +48,9 @@ public class MovieDbProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case MOVIE_ID: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
-                        MovieResponse.MovieEntry.TABLE_NAME,
+                        MovieDbContract.MovieEntry.TABLE_NAME,
                         projection,
-                        MovieResponse.MovieEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
+                        MovieDbContract.MovieEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
                         null,
                         null,
                         null,
@@ -62,7 +60,7 @@ public class MovieDbProvider extends ContentProvider {
             }
             case MOVIE: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
-                        MovieResponse.MovieEntry.TABLE_NAME,
+                        MovieDbContract.MovieEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -86,9 +84,9 @@ public class MovieDbProvider extends ContentProvider {
 
         switch (match) {
             case MOVIE:
-                return MovieResponse.MovieEntry.CONTENT_TYPE;
+                return MovieDbContract.MovieEntry.CONTENT_TYPE;
             case MOVIE_ID:
-                return MovieResponse.MovieEntry.CONTENT_ITEM_TYPE;
+                return MovieDbContract.MovieEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -104,9 +102,9 @@ public class MovieDbProvider extends ContentProvider {
 
         switch (match) {
             case MOVIE: {
-                long _id = db.insert(MovieResponse.MovieEntry.TABLE_NAME, null, values);
+                long _id = db.insert(MovieDbContract.MovieEntry.TABLE_NAME, null, values);
                 if (_id > 0)
-                    returnUri = MovieResponse.MovieEntry.buildMovieUri(_id);
+                    returnUri = MovieDbContract.MovieEntry.buildMovieUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -125,7 +123,7 @@ public class MovieDbProvider extends ContentProvider {
         int rowsDeleted;
         switch (match) {
             case MOVIE:
-                rowsDeleted = db.delete(MovieResponse.MovieEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = db.delete(MovieDbContract.MovieEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -145,7 +143,7 @@ public class MovieDbProvider extends ContentProvider {
 
         switch (match) {
             case MOVIE:
-                rowsUpdated = db.update(MovieResponse.MovieEntry.TABLE_NAME, values, selection, selectionArgs);
+                rowsUpdated = db.update(MovieDbContract.MovieEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

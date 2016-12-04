@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
-import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse.MovieEntry;
 
 /**
  * Created by user on 11/29/16.
@@ -30,19 +29,19 @@ public class MovieDbManager {
     public static final int COL_MOVIE_IMAGE_BASE = 8;
     public static final int COL_MOVIE_OVERVIEW = 9;
     private static final String[] MOVIE_COLUMNS = {
-            MovieEntry._ID,
-            MovieEntry.COLUMN_MOVIEDB_ID,
-            MovieEntry.COLUMN_TITLE_TEXT,
-            MovieEntry.COLUMN_RELEASE_DATE_TEXT,
-            MovieEntry.COLUMN_VOTE_TEXT,
-            MovieEntry.COLUMN_POPULARITY_TEXT,
-            MovieEntry.COLUMN_BACKDROP_PATH_TEXT,
-            MovieEntry.COLUMN_COVER_PATH_TEXT,
-            MovieEntry.COLUMN_IMAGE_BASE,
-            MovieEntry.COLUMN_OVERVIEW_TEXT
+            MovieDbContract.MovieEntry._ID,
+            MovieDbContract.MovieEntry.COLUMN_MOVIEDB_ID,
+            MovieDbContract.MovieEntry.COLUMN_TITLE_TEXT,
+            MovieDbContract.MovieEntry.COLUMN_RELEASE_DATE_TEXT,
+            MovieDbContract.MovieEntry.COLUMN_VOTE_TEXT,
+            MovieDbContract.MovieEntry.COLUMN_POPULARITY_TEXT,
+            MovieDbContract.MovieEntry.COLUMN_BACKDROP_PATH_TEXT,
+            MovieDbContract.MovieEntry.COLUMN_COVER_PATH_TEXT,
+            MovieDbContract.MovieEntry.COLUMN_IMAGE_BASE,
+            MovieDbContract.MovieEntry.COLUMN_OVERVIEW_TEXT
     };
 
-    private static final String WHERE_MOVIEDB_ID = MovieEntry.COLUMN_MOVIEDB_ID + " = ?";
+    private static final String WHERE_MOVIEDB_ID = MovieDbContract.MovieEntry.COLUMN_MOVIEDB_ID + " = ?";
     //private static final String WHERE_DAY = MovieEntry.COLUMN_END_DATE_TEXT + " IS NOT NULL AND substr(" + MovieEntry.COLUMN_START_DATE_TEXT + ",1,8) = ? OR " + "substr(" + MovieEntry.COLUMN_END_DATE_TEXT + ",1,8) = ?";
     //private static final String WHERE_DATES = MovieEntry.COLUMN_END_DATE_TEXT + " IS NOT NULL AND substr(" + MovieEntry.COLUMN_END_DATE_TEXT + ",1,8) >= ? AND " + "substr(" + MovieEntry.COLUMN_START_DATE_TEXT + ",1,8) <= ?";
 
@@ -83,7 +82,7 @@ public class MovieDbManager {
         if (movie.overview == null) {
             throw new IllegalStateException("movie overview cannot be null");
         }
-        movie.localDbId = ContentUris.parseId(mContext.getContentResolver().insert(MovieEntry.CONTENT_URI, prepareMovieValues(movie)));
+        movie.localDbId = ContentUris.parseId(mContext.getContentResolver().insert(MovieDbContract.MovieEntry.CONTENT_URI, prepareMovieValues(movie)));
     }
 
     public void updateMovie(MovieResponse movie) {
@@ -117,7 +116,7 @@ public class MovieDbManager {
         if (movie.overview == null) {
             throw new IllegalStateException("movie overview cannot be null");
         }
-        mContext.getContentResolver().update(MovieEntry.CONTENT_URI, prepareMovieValues(movie), WHERE_MOVIEDB_ID, new String[]{String.valueOf(movie.movieDbId)});
+        mContext.getContentResolver().update(MovieDbContract.MovieEntry.CONTENT_URI, prepareMovieValues(movie), WHERE_MOVIEDB_ID, new String[]{String.valueOf(movie.movieDbId)});
     }
 
     public void deleteMovie(MovieResponse movie) {
@@ -128,7 +127,7 @@ public class MovieDbManager {
             throw new IllegalStateException("movie movieDbId cannot be null");
         }
 
-        mContext.getContentResolver().delete(MovieEntry.CONTENT_URI, WHERE_MOVIEDB_ID, new String[]{String.valueOf(movie.movieDbId)});
+        mContext.getContentResolver().delete(MovieDbContract.MovieEntry.CONTENT_URI, WHERE_MOVIEDB_ID, new String[]{String.valueOf(movie.movieDbId)});
     }
 
     public MovieResponse getMovie(Integer movieDbId) {
@@ -136,7 +135,7 @@ public class MovieDbManager {
             throw new NullPointerException("movieDbId == null");
         }
 
-        Cursor cursor = mContext.getContentResolver().query(MovieEntry.CONTENT_URI, MOVIE_COLUMNS, WHERE_MOVIEDB_ID, new String[]{movieDbId.toString()}, null);
+        Cursor cursor = mContext.getContentResolver().query(MovieDbContract.MovieEntry.CONTENT_URI, MOVIE_COLUMNS, WHERE_MOVIEDB_ID, new String[]{movieDbId.toString()}, null);
         if (cursor != null) {
             if(cursor.moveToFirst()) {
                 try {
@@ -159,7 +158,7 @@ public class MovieDbManager {
     }
 
     public List<MovieResponse> getAll() {
-        Cursor cursor = mContext.getContentResolver().query(MovieEntry.CONTENT_URI, MOVIE_COLUMNS, null, null, null);
+        Cursor cursor = mContext.getContentResolver().query(MovieDbContract.MovieEntry.CONTENT_URI, MOVIE_COLUMNS, null, null, null);
         if (cursor != null) {
             if(cursor.moveToFirst()) {
                 List<MovieResponse> movies = new ArrayList<>(cursor.getCount());
@@ -180,15 +179,15 @@ public class MovieDbManager {
 
     private ContentValues prepareMovieValues(MovieResponse movie) {
         ContentValues values = new ContentValues();
-        values.put(MovieEntry.COLUMN_MOVIEDB_ID, movie.movieDbId);
-        values.put(MovieEntry.COLUMN_TITLE_TEXT, movie.title);
-        values.put(MovieEntry.COLUMN_RELEASE_DATE_TEXT, MovieDbHelper.getDateString(movie.releaseDate));
-        values.put(MovieEntry.COLUMN_VOTE_TEXT, movie.voteAverage);
-        values.put(MovieEntry.COLUMN_POPULARITY_TEXT, movie.popularity);
-        values.put(MovieEntry.COLUMN_BACKDROP_PATH_TEXT, movie.backdropPath);
-        values.put(MovieEntry.COLUMN_COVER_PATH_TEXT, movie.coverPath);
-        values.put(MovieEntry.COLUMN_IMAGE_BASE, movie.imageBasePath);
-        values.put(MovieEntry.COLUMN_OVERVIEW_TEXT, movie.overview);
+        values.put(MovieDbContract.MovieEntry.COLUMN_MOVIEDB_ID, movie.movieDbId);
+        values.put(MovieDbContract.MovieEntry.COLUMN_TITLE_TEXT, movie.title);
+        values.put(MovieDbContract.MovieEntry.COLUMN_RELEASE_DATE_TEXT, MovieDbHelper.getDateString(movie.releaseDate));
+        values.put(MovieDbContract.MovieEntry.COLUMN_VOTE_TEXT, movie.voteAverage);
+        values.put(MovieDbContract.MovieEntry.COLUMN_POPULARITY_TEXT, movie.popularity);
+        values.put(MovieDbContract.MovieEntry.COLUMN_BACKDROP_PATH_TEXT, movie.backdropPath);
+        values.put(MovieDbContract.MovieEntry.COLUMN_COVER_PATH_TEXT, movie.coverPath);
+        values.put(MovieDbContract.MovieEntry.COLUMN_IMAGE_BASE, movie.imageBasePath);
+        values.put(MovieDbContract.MovieEntry.COLUMN_OVERVIEW_TEXT, movie.overview);
         return values;
     }
 

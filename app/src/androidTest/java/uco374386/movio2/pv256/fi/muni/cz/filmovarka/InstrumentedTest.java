@@ -1,6 +1,4 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
-import android.content.Context;
-import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.FailureHandler;
@@ -10,13 +8,11 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 
 import org.hamcrest.Matcher;
-import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbManager;
-import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbContract;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -42,7 +38,7 @@ public class InstrumentedTest {
     public void setUp() throws Exception {
         tablet = mActivityRule.getActivity().tablet;
         InstrumentationRegistry.getTargetContext().getContentResolver().delete(
-                MovieResponse.MovieEntry.CONTENT_URI,
+                MovieDbContract.MovieEntry.CONTENT_URI,
                 null,
                 null
         );
