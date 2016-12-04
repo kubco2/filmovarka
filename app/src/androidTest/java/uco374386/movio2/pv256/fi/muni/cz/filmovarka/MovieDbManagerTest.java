@@ -101,6 +101,21 @@ public class MovieDbManagerTest extends AndroidTestCase {
         assertEquals("not all movies saved or getAll doesnt work", list.get(2).movieDbId, movie3.movieDbId);
     }
 
+    public void testChangeState() throws Exception{
+        MovieResponse movie1 = createMovie();
+        MovieResponse movieSaved = mManager.getMovie(movie1.movieDbId);
+        assertNull("movie should not be saved or getMovie doesnt work right", movieSaved);
+        mManager.changeSaveState(movie1, false);
+        movieSaved = mManager.getMovie(movie1.movieDbId);
+        assertNull("movie should not be saved or getMovie/changeSaveState doesnt work right", movieSaved);
+        mManager.changeSaveState(movie1, true);
+        movieSaved = mManager.getMovie(movie1.movieDbId);
+        assertNotNull("movie should be saved or getMovie/changeSaveState doesnt work right", movieSaved);
+        mManager.changeSaveState(movie1, false);
+        movieSaved = mManager.getMovie(movie1.movieDbId);
+        assertNull("movie should not be saved or getMovie/changeSaveState doesnt work right", movieSaved);
+    }
+
     public MovieResponse createMovie() {
         MovieResponse movie = new MovieResponse();
         movie.movieDbId = 259316;

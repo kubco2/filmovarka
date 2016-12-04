@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.DownloadService;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.MainActivity;
@@ -20,13 +21,14 @@ import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
  */
 
 public class DiscoverListFragment extends ListFragment {
-
+    protected static final String TAG = DiscoverListFragment.class.getSimpleName();
     public static final String EXTRA_SHOW_FIRST = "showFirst";
-
+    private boolean loadNext = false;
     @Override
     public void onAttach(Context context) {
-        super.onAttach(context);
         Log.d(TAG, "onAttach");
+        super.onAttach(context);
+        loadNext = getArguments().getBoolean(EXTRA_SHOW_FIRST);
         IntentFilter intentFilter = new IntentFilter(DownloadService.DOWNLOAD_SERVICE_INTENT);
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMovieListReceiver, intentFilter);
         Intent intent = new Intent(getContext(), DownloadService.class);
@@ -51,38 +53,26 @@ public class DiscoverListFragment extends ListFragment {
         public void onReceive(Context context, Intent intent) {
             String error = intent.getStringExtra(DownloadService.EXTRA_RESPONSE_ERROR);
             if(error != null) {
-                switch (error) {
-                    case DownloadService.RESPONSE_ERROR_OFFLINE:
-                        mRecyclerView.setVisibility(View.GONE);
-                        rootView.findViewById(R.id.empty_view_no_internet).setVisibility(View.VISIBLE);
-                        break;
-                    case DownloadService.RESPONSE_ERROR_PARSE:
-                        mRecyclerView.setVisibility(View.GONE);
-                        rootView.findViewById(R.id.empty_view_parse_error).setVisibility(View.VISIBLE);
-                        break;
+                mRecyclerView.setVisibility(View.GONE);
+                rootView.findViewById(R.id.empty_view_parse_error).setVisibility(View.VISIBLE);
+            }
+            List<MovieResponse> movies = intent.getExtras().getParcelableArrayList(DownloadService.EXTRA_RESPONSE);
+            if(movies == null || movies.isEmpty()) {
+                if(items.isEmpty()) {
+                    mRecyclerView.setVisibility(View.GONE);
+                    rootView.findViewById(R.id.empty_view_no_data).setVisibility(View.VISIBLE);
                 }
                 return;
-            }
-            String action = intent.getStringExtra(DownloadService.EXTRA_ACTION);
-            ArrayList<MovieResponse> movies = intent.getExtras().getParcelableArrayList(DownloadService.EXTRA_RESPONSE);
-            switch (action) {
-                case DownloadService.ACTION_DOWNLOAD_LIST_MOST_POPULAR:
-                    items.add(getResources().getString(R.string.sectionMostPopular));
-                    items.addAll(movies);
-                    break;
-                case DownloadService.ACTION_DOWNLOAD_LIST_MOST_VOTED:
-                    items.add(getResources().getString(R.string.sectionMostVoted));
-                    items.addAll(movies);
-                    break;
-            }
-            if(items.size() <= 2) {
-                mRecyclerView.setVisibility(View.GONE);
-                rootView.findViewById(R.id.empty_view_no_data).setVisibility(View.VISIBLE);
             } else {
-                mAdapter.setItems(items);
-                if(getArguments().getBoolean(EXTRA_SHOW_FIRST)) {
-                    ((MainActivity) getActivity()).openDetails((MovieResponse) items.get(1));
-                }
+                mRecyclerView.setVisibility(View.VISIBLE);
+                rootView.findViewById(R.id.empty_view_no_data).setVisibility(View.GONE);
+            }
+            items.add(intent.getStringExtra(DownloadService.EXTRA_SECTION));
+            items.addAll(movies);
+            mAdapter.setItems(items);
+            if(loadNext) {
+                loadNext = false;
+                mCallback.onItemClicked((MovieResponse) items.get(1));
             }
         }
     };

@@ -54,6 +54,41 @@ public class InstrumentedTest {
     }
 
     @Test
+    public void testNavigation() throws InterruptedException {
+
+        //download movies
+        Thread.sleep(5000);
+        //skip category name item
+        onView(withId(R.id.rvMovies))
+                .withFailureHandler(new FailureHandler() {
+                    @Override
+                    public void handle(Throwable error, Matcher<View> viewMatcher) {
+                        fail("recycler view doesnt show loaded movie");
+                    }
+                })
+                .perform(actionOnItemAtPosition(1, click()));
+        if(!mActivityRule.getActivity().tablet)
+            Espresso.pressBack();
+        //show saved
+        onView(withId(R.id.saved))
+                .withFailureHandler(new FailureHandler() {
+                    @Override
+                    public void handle(Throwable error, Matcher<View> viewMatcher) {
+                        fail("saved switch button missing");
+                    }
+                })
+                .perform(click());
+        onView(withId(R.id.rvMovies))
+                .withFailureHandler(new FailureHandler() {
+                    @Override
+                    public void handle(Throwable error, Matcher<View> viewMatcher) {
+                        fail("recycler view doesnt show that there is not saved movies");
+                    }
+                })
+                .perform(actionOnItemAtPosition(0, click()));
+    }
+
+    @Test
     public void saveMovie() throws InterruptedException {
 
         //download movies
@@ -70,7 +105,8 @@ public class InstrumentedTest {
         //save movie
         onView(withId(R.id.fab))
                 .perform(click());
-        Espresso.pressBack();
+        if(!mActivityRule.getActivity().tablet)
+            Espresso.pressBack();
         //show saved
         onView(withId(R.id.saved))
                 .perform(click());
@@ -87,12 +123,13 @@ public class InstrumentedTest {
         //unsave movie
         onView(withId(R.id.fab))
                 .perform(click());
-        Espresso.pressBack();
+        if(!mActivityRule.getActivity().tablet)
+            Espresso.pressBack();
         //load DB
         Thread.sleep(1000);
         try {
             onView(withId(R.id.rvMovies))
-                    .perform(actionOnItemAtPosition(0, click()));
+                    .perform(actionOnItemAtPosition(1, click()));
             fail("recycler view show UNsaved movie");
         } catch (Exception e) {
             //ok

@@ -1,4 +1,4 @@
-package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
+package uco374386.movio2.pv256.fi.muni.cz.filmovarka.Network;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

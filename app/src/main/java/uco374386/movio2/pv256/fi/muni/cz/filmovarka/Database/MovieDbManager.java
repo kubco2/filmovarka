@@ -150,6 +150,14 @@ public class MovieDbManager {
         return null;
     }
 
+    public void changeSaveState(MovieResponse movie, boolean saved) {
+        if(saved) {
+            createMovie(movie);
+        } else {
+            deleteMovie(movie);
+        }
+    }
+
     public List<MovieResponse> getAll() {
         Cursor cursor = mContext.getContentResolver().query(MovieEntry.CONTENT_URI, MOVIE_COLUMNS, null, null, null);
         if (cursor != null) {

@@ -32,6 +32,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final int TYPE_MOVIE = 1;
     private ArrayList<Object> mItems;
     private Context mContext;
+    private ListFragment.ListClickable mCallback;
 
     public static class SectionViewHolder extends RecyclerView.ViewHolder {
         public TextView sectionTextView;
@@ -57,9 +58,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    public MoviesAdapter(Context context, ArrayList<Object> items) {
+    public MoviesAdapter(Context context, ArrayList<Object> items, ListFragment.ListClickable callback) {
         this.mItems = items;
         mContext = context;
+        mCallback = callback;
     }
 
     public void setItems(ArrayList<Object> items) {
@@ -84,8 +86,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             case TYPE_MOVIE:
                 view = inflater.inflate(R.layout.item_movie, parent, false);
-                View img = view.findViewById(R.id.movie_item_image);
-                img.setMinimumHeight(MainActivity.getDisplayWidth(getContext())/16*9);
+                view.findViewById(R.id.movie_item_image);
                 return new MovieViewHolder(view);
         }
         throw new IllegalStateException("viewType not supported");
@@ -112,7 +113,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ((MainActivity)MoviesAdapter.this.getContext()).openDetails(movie);
+                        mCallback.onItemClicked(movie);
                     }
                 });
 

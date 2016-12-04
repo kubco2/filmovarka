@@ -1,6 +1,8 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments;
 
 import android.content.Context;
+import android.graphics.Movie;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +23,7 @@ import com.squareup.picasso.Picasso;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbHelper;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbManager;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.MainActivity;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.R;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
@@ -32,8 +36,10 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     private static final String TAG = MovieFragment.class.getSimpleName();
 
     View rootView;
+    MovieLoader mLoader;
     MovieResponse movie;
     boolean saved = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -46,11 +52,9 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     public void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
-        updateContent();
     }
 
-    public void updateContent() {
-        Bundle data = getArguments();
+    public void updateContent(Bundle data) {
         if(data == null) {
             return;
         }
@@ -67,16 +71,11 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
             public void onClick(View v) {
                 MovieDbManager manager = new MovieDbManager(getContext());
                 saved = !saved;
-                if(saved) {
-                    manager.createMovie(movie);
-                } else {
-                    manager.deleteMovie(movie);
-                }
+                manager.changeSaveState(movie, saved);
                 updateFab(saved);
             }
         });
-        getLoaderManager().initLoader(1, null, this).forceLoad();
-
+        mLoader.setMovieId(movie.movieDbId).forceLoad();
         Picasso.with(getContext()).load(movie.getBackdropUrl("w1280")).into((ImageView) rootView.findViewById(R.id.backdrop_image));
         Picasso.with(getContext()).load(movie.getPosterUrl("w342")).into((ImageView) rootView.findViewById(R.id.poster_image));
     }
@@ -106,12 +105,14 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     public void onAttach(Context context) {
         Log.d(TAG, "onAttach");
         super.onAttach(context);
+        mLoader = (MovieLoader) getLoaderManager().initLoader(1, null, this);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
+        updateContent(getArguments());
     }
 
     @Override
@@ -152,7 +153,7 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public Loader<MovieResponse> onCreateLoader(int id, Bundle args) {
-        return new MovieLoader(getContext(), movie.movieDbId);
+        return new MovieLoader(getContext());
     }
 
     @Override
@@ -162,14 +163,20 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     }
 
     @Override
-    public void onLoaderReset(Loader<MovieResponse> loader) {}
+    public void onLoaderReset(Loader<MovieResponse> loader) {
+        ((MovieLoader)loader).setMovieId(movie.movieDbId);
+    }
 
     static class MovieLoader extends AsyncTaskLoader<MovieResponse> {
         private long movieId;
 
-        public MovieLoader(Context context, long movieId) {
+        public MovieLoader(Context context) {
             super(context);
+        }
+
+        public MovieLoader setMovieId(long movieId) {
             this.movieId = movieId;
+            return this;
         }
 
         @Override
@@ -177,4 +184,6 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
             return new MovieDbManager(getContext()).getMovie((int)movieId);
         }
     }
+
+
 }

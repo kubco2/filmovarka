@@ -17,7 +17,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"/>
 
-    <FrameLayout
+    <fragment android:name="uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.MovieFragment"
         android:id="@+id/details"
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_width="match_parent"

@@ -18,16 +18,10 @@ public class DetailsActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+        ((MovieFragment)getSupportFragmentManager().findFragmentById(R.id.details)).updateContent(getIntent().getExtras());
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-        MovieFragment displayFrag = new MovieFragment();
-        displayFrag.setArguments(getIntent().getExtras());
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.details, displayFrag).commit();
     }
 
     @Override
