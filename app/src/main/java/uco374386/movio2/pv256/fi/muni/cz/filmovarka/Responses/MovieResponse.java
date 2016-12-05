@@ -1,6 +1,7 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses;
 
 import android.content.ContentUris;
+import android.graphics.Movie;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -16,33 +17,23 @@ import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbContract;
  * Created by user on 10/23/16.
  */
 
-public class MovieResponse implements Parcelable {
+public class MovieResponse implements Parcelable, Cloneable {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd";
 
 
     @SerializedName("poster_path")
     public String coverPath;
-    public boolean adult;
     public String overview;
     @SerializedName("release_date")
     public Date releaseDate;
-    @SerializedName("genre_ids")
-    public int[] genreIds;
     @SerializedName("id")
     public Integer movieDbId;
     public Long localDbId;
-    @SerializedName("original_title")
-    public String originalTitle;
-    @SerializedName("original_language")
-    public String originalLanguage;
     public String title;
     @SerializedName("backdrop_path")
     public String backdropPath;
     public Float popularity;
-    @SerializedName("vote_count")
-    public int voteCount;
-    public boolean video;
     @SerializedName("vote_average")
     public Float voteAverage;
     public String imageBasePath;
@@ -143,5 +134,14 @@ public class MovieResponse implements Parcelable {
         result = 31 * result + (voteAverage != null ? voteAverage.hashCode() : 0);
         result = 31 * result + (imageBasePath != null ? imageBasePath.hashCode() : 0);
         return result;
+    }
+
+    public MovieResponse createClone() {
+        try {
+            return (MovieResponse) this.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

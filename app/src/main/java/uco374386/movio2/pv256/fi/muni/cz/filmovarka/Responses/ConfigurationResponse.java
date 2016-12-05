@@ -17,4 +17,7 @@ public class ConfigurationResponse {
     @SerializedName("change_keys")
     public String[] changeKeys;
 
+    public String getImageBasePath() {
+        return images.secureBaseUrl;
+    }
 }

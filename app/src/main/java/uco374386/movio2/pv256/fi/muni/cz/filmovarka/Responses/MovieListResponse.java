@@ -35,7 +35,7 @@ public class MovieListResponse {
             return new MovieResponse[0];
         };
         for(MovieResponse item: results) {
-            item.imageBasePath = configuration.images.secureBaseUrl;
+            item.imageBasePath = configuration.getImageBasePath();
         }
         return results;
     }
