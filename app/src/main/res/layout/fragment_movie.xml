@@ -28,7 +28,7 @@
 
 
     <android.support.constraint.ConstraintLayout
-        android:background="@color/colorPrimary"
+        android:background="?attr/colorPrimary"
         android:id="@+id/constraintLayout"
         tools:layout_width="20dp"
         android:layout_width="0dp"

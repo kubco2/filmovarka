@@ -86,12 +86,6 @@ public class InstrumentedTest {
         Thread.sleep(5000);
         //skip category name item
         onView(withId(R.id.rvMovies))
-                .withFailureHandler(new FailureHandler() {
-                    @Override
-                    public void handle(Throwable error, Matcher<View> viewMatcher) {
-                        fail("recycler view doesnt show loaded movie");
-                    }
-                })
                 .perform(actionOnItemAtPosition(1, click()));
         //save movie
         onView(withId(R.id.fab))

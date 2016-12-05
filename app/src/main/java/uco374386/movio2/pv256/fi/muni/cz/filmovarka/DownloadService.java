@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Network.MovieDbFactory;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Network.MovieDbManager;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Network.MovieDbService;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.ConfigurationResponse;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieListResponse;
@@ -39,7 +40,7 @@ public class DownloadService extends IntentService {
     public static final String ACTION_DOWNLOAD_LIST_MOST_POPULAR = "getMostPopularMovies";
     public static final String ACTION_DOWNLOAD_LIST_MOST_VOTED = "getMostVotedMovies";
 
-    private MovieDbService service;
+    private MovieDbManager service;
     private ConfigurationResponse serverConfiguration;
 
     public DownloadService() {
@@ -53,7 +54,7 @@ public class DownloadService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        service = MovieDbFactory.getMovieDbService();
+        service = new MovieDbManager();
     }
 
     @Override

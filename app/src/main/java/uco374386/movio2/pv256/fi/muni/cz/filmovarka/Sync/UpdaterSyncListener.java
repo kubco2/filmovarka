@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Logger;
+
 
 /**
  * Created by user on 12/3/16.
@@ -18,7 +20,7 @@ public class UpdaterSyncListener extends BroadcastReceiver{
         switch (intent.getAction()) {
             case Intent.ACTION_BOOT_COMPLETED:
             case Intent.ACTION_MY_PACKAGE_REPLACED:
-                Log.i(TAG, "Setup sync alarms ACTION_BOOT_COMPLETED ACTION_MY_PACKAGE_REPLACED");
+                Logger.i(TAG, "Setup sync alarms ACTION_BOOT_COMPLETED ACTION_MY_PACKAGE_REPLACED");
                 //UpdaterSyncAdapter.configurePeriodicSync(context, UpdaterSyncAdapter.SYNC_INTERVAL, UpdaterSyncAdapter.SYNC_FLEXTIME);
                 UpdaterSyncAdapter.configurePeriodicSync(context, 60, 20);
         }

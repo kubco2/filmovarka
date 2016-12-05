@@ -53,21 +53,22 @@ public class MainActivity extends AppCompatActivity
     private boolean selectedCategoriesChanged = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+        Logger.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         openSaved = getIntent().getExtras() != null && getIntent().getExtras().getBoolean(EXTRA_OPEN_SAVED, false);
         UpdaterSyncAdapter.initializeSyncAdapter(this);
-        boolean alternative = this.getPreferences(Context.MODE_PRIVATE).getBoolean(MainActivity.SECONDARY_THEME, false);
-        Log.d("MainActivity", "Alternative theme " + alternative);
+        boolean alternative = BuildConfig.APPLICATION_ID.endsWith(".paid");
+        Logger.d(TAG, "Alternative theme " + alternative);
         if (alternative) {
             MainActivity.this.setTheme(R.style.AppThemeSecond);
         } else {
-            MainActivity.this.setTheme(R.style.AppTheme);
+            MainActivity.this.setTheme(R.style.AppThemeFirst);
         }
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitle(getResources().getString(R.string.app_name));
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
@@ -134,13 +135,11 @@ public class MainActivity extends AppCompatActivity
         if(openSaved) {
             list = new SavedListFragment();
             btn.setVisibility(View.VISIBLE);
-
-            btn.setBackgroundResource(R.color.colorPrimary);
             btn.setImageResource(R.drawable.ic_refresh_white_24dp);
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i(TAG, "requestSync");
+                    Logger.i(TAG, "requestSync");
                     UpdaterSyncAdapter.syncImmediately(getApplicationContext());
                     Toast toast = Toast.makeText(getApplicationContext(), R.string.request_sync, Toast.LENGTH_SHORT);
                     toast.show();
@@ -193,7 +192,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        Log.d(TAG, "onNavigationItemSelected");
+        Logger.d(TAG, "onNavigationItemSelected");
         String id = item.getIntent().getAction();
         Set<String> disabled = getDisabledCategories();
         boolean isDisabled = disabled.contains(id);
@@ -220,43 +219,43 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onPostCreate");
+        Logger.d(TAG, "onPostCreate");
         super.onPostCreate(savedInstanceState);
     }
 
     @Override
     protected void onStop() {
-        Log.d(TAG, "onStop");
+        Logger.d(TAG, "onStop");
         super.onStop();
     }
 
     @Override
     protected void onPostResume() {
-        Log.d(TAG, "onPostResume");
+        Logger.d(TAG, "onPostResume");
         super.onPostResume();
     }
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy");
+        Logger.d(TAG, "onDestroy");
         super.onDestroy();
     }
 
     @Override
     protected void onPause() {
-        Log.d(TAG, "onPause");
+        Logger.d(TAG, "onPause");
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume");
+        Logger.d(TAG, "onResume");
         super.onResume();
     }
 
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart");
+        Logger.d(TAG, "onStart");
         super.onStart();
     }
 

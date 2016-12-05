@@ -36,7 +36,7 @@ public class App extends Application {
             vmpb.detectLeakedClosableObjects();
         }
         StrictMode.setVmPolicy(vmpb.build());
-        Log.d("StrictMode", "started");
+        Logger.d("StrictMode", "started");
     }
 
 }

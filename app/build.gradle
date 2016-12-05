@@ -1,3 +1,8 @@
+def versionMajor = 1
+def versionMinor = 1
+def versionPatch = 1
+def versionBuild = 1
+def versionCodeComputed  = versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
 apply plugin: 'com.android.application'
 
 android {
@@ -9,18 +14,60 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        resConfigs "sk", "en"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        versionCode versionCodeComputed
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+    }
+    signingConfigs {
+        release {
+            storeFile file(RELEASE_STORE_FILE)
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
+        }
     }
     buildTypes {
         release {
+            shrinkResources false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
+        debug {
+            versionNameSuffix "-${versionCodeComputed}"
+        }
+    }
+
+    productFlavors {
+        flavor1 {
+            applicationId 'uco374386.movio2.pv256.fi.muni.cz.filmovarka.free'
+            versionName "${versionName}-free"
+            resValue "string", "app_name_n", "Filmovarka"
+            resValue "string", "account_type", "${applicationId}.account"
+            resValue "string", "authority", "${applicationId}.authority"
+            buildConfigField "String", "ACCOUNT_TYPE", "\"${applicationId}.account\""
+            buildConfigField "String", "AUTHORITY", "\"${applicationId}.authority\""
+            buildConfigField "Boolean", "LOGGING", "false"
+        }
+        flavor2 {
+            applicationId 'uco374386.movio2.pv256.fi.muni.cz.filmovarka.paid'
+            versionName "${versionName}-paid"
+            resValue "string", "app_name_n", "FilmovarkaExtra"
+            resValue "string", "account_type", "${applicationId}.account"
+            resValue "string", "authority", "${applicationId}.authority"
+            buildConfigField "String", "ACCOUNT_TYPE", "\"${applicationId}.account\""
+            buildConfigField "String", "AUTHORITY", "\"${applicationId}.authority\""
+            buildConfigField "Boolean", "LOGGING", "true"
+        }
+    }
+    buildTypes.each {
+        it.buildConfigField 'String', 'MOVIEDB_API_KEY', MOVIEDB_API_KEY
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -36,7 +83,7 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-    compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
+    compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.picasso:picasso:2.5.2'
     testCompile 'junit:junit:4.12'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'

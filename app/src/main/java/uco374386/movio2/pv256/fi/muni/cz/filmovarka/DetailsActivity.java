@@ -16,7 +16,14 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+        Logger.d(TAG, "onCreate");
+        boolean alternative = BuildConfig.APPLICATION_ID.endsWith(".paid");
+        Logger.d(TAG, "Alternative theme " + alternative);
+        if (alternative) {
+            DetailsActivity.this.setTheme(R.style.AppThemeSecond);
+        } else {
+            DetailsActivity.this.setTheme(R.style.AppThemeFirst);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -31,43 +38,43 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onPostCreate");
+        Logger.d(TAG, "onPostCreate");
         super.onPostCreate(savedInstanceState);
     }
 
     @Override
     protected void onStop() {
-        Log.d(TAG, "onStop");
+        Logger.d(TAG, "onStop");
         super.onStop();
     }
 
     @Override
     protected void onPostResume() {
-        Log.d(TAG, "onPostResume");
+        Logger.d(TAG, "onPostResume");
         super.onPostResume();
     }
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy");
+        Logger.d(TAG, "onDestroy");
         super.onDestroy();
     }
 
     @Override
     protected void onPause() {
-        Log.d(TAG, "onPause");
+        Logger.d(TAG, "onPause");
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume");
+        Logger.d(TAG, "onResume");
         super.onResume();
     }
 
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart");
+        Logger.d(TAG, "onStart");
         super.onStart();
     }
 
