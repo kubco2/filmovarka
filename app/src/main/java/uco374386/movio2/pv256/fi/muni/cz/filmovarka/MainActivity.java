@@ -2,7 +2,6 @@ package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -10,25 +9,18 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
-import android.view.Display;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.DiscoverListFragment;
@@ -51,26 +43,25 @@ public class MainActivity extends AppCompatActivity
     public boolean tablet = false;
     public boolean firstLoad = true;
     private boolean selectedCategoriesChanged = false;
+    ActionBarDrawerToggle toggle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Logger.d(TAG, "onCreate");
-        super.onCreate(savedInstanceState);
-        openSaved = getIntent().getExtras() != null && getIntent().getExtras().getBoolean(EXTRA_OPEN_SAVED, false);
-        UpdaterSyncAdapter.initializeSyncAdapter(this);
         boolean alternative = BuildConfig.APPLICATION_ID.endsWith(".paid");
         Logger.d(TAG, "Alternative theme " + alternative);
         if (alternative) {
-            MainActivity.this.setTheme(R.style.AppThemeSecond);
+            this.setTheme(R.style.AppThemeSecond);
         } else {
-            MainActivity.this.setTheme(R.style.AppThemeFirst);
+            this.setTheme(R.style.AppThemeFirst);
         }
+        super.onCreate(savedInstanceState);
+        UpdaterSyncAdapter.initializeSyncAdapter(this);
         setContentView(R.layout.activity_main);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        openSaved = getIntent().getExtras() != null && getIntent().getExtras().getBoolean(EXTRA_OPEN_SAVED, false);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(getResources().getString(R.string.app_name));
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -88,15 +79,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Switch switchButton = ((Switch)findViewById(R.id.saved));
-        switchButton.setChecked(openSaved);
-        switchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openSaved = ((Switch)v).isChecked();
-                updateListFragment(toggle);
-            }
-        });
 
         Set<String> disabled = getDisabledCategories();
         for(int i = 0; i < categories_id.length; i++) {
@@ -115,13 +97,12 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.details, displayFrag).commit();
         }
-        updateListFragment(toggle);
+        updateListFragment();
         firstLoad = false;
     }
 
-    private void updateListFragment(ActionBarDrawerToggle toggle) {
+    private void updateListFragment() {
         Fragment list;
-        ImageButton btn = (ImageButton)findViewById(R.id.refresh);
 
         if(!isSystemOnline()) {
             findViewById(R.id.list1).setVisibility(View.GONE);
@@ -134,26 +115,11 @@ public class MainActivity extends AppCompatActivity
 
         if(openSaved) {
             list = new SavedListFragment();
-            btn.setVisibility(View.VISIBLE);
-            btn.setImageResource(R.drawable.ic_refresh_white_24dp);
-            btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Logger.i(TAG, "requestSync");
-                    UpdaterSyncAdapter.syncImmediately(getApplicationContext());
-                    Toast toast = Toast.makeText(getApplicationContext(), R.string.request_sync, Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-            });
-            toggle.setDrawerIndicatorEnabled(false);
         } else {
             list = new DiscoverListFragment();
             Bundle bundle = new Bundle();
             bundle.putBoolean(DiscoverListFragment.EXTRA_SHOW_FIRST, firstLoad && tablet);
             list.setArguments(bundle);
-            btn.setVisibility(View.GONE);
-            btn.setOnClickListener(null);
-            toggle.setDrawerIndicatorEnabled(true);
         }
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.list1, list).commit();
@@ -215,6 +181,38 @@ public class MainActivity extends AppCompatActivity
             item.setChecked(false);
             item.setIcon(R.drawable.ic_clear_black_24dp);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_main_toolbar, menu);
+        Switch saved = ((Switch) menu.findItem(R.id.action_saved).getActionView().findViewById(R.id.saved));
+        saved.setChecked(openSaved);
+        saved.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Logger.d(TAG, "click saved switch");
+                    openSaved = ((Switch)v).isChecked();
+                    updateListFragment();
+                }
+            });
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                Logger.d(TAG, "requestSync");
+                UpdaterSyncAdapter.syncImmediately(getApplicationContext());
+                Toast toast = Toast.makeText(getApplicationContext(), R.string.request_sync, Toast.LENGTH_SHORT);
+                toast.show();
+                break;
+            case R.id.action_saved:
+                //handled in onCreateOptionsMenu
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

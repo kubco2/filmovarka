@@ -9,48 +9,30 @@
     tools:context="uco374386.movio2.pv256.fi.muni.cz.filmovarka.MainActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:theme="@style/AppTheme.AppBarOverlay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+
+
             >
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-                    android:id="@+id/toolbar_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
-                <ImageButton
-                    android:visibility="gone"
-                    android:id="@+id/refresh"
-                    android:background="?colorPrimary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:contentDescription="@string/refresh"/>
-                <Switch
-                    android:text="@string/saved"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:id="@+id/saved"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:checked="false"
-                    android:textColor="@android:color/white"
-                    android:splitTrack="false"
-                    android:textOn="@string/yes"
-                    android:textOff="@string/no"/>
-            </RelativeLayout>
+            <!--<RelativeLayout-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content">-->
+                <!--&lt;!&ndash;<TextView&ndash;&gt;-->
+                    <!--&lt;!&ndash;style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:id="@+id/toolbar_title"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+                    <!--&lt;!&ndash;/>&ndash;&gt;-->
+
+            <!--</RelativeLayout>-->
 
         </android.support.v7.widget.Toolbar>
-
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_main"/>

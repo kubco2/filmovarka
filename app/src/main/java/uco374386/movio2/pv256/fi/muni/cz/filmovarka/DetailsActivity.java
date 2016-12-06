@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.MovieFragment;
@@ -20,13 +19,13 @@ public class DetailsActivity extends AppCompatActivity {
         boolean alternative = BuildConfig.APPLICATION_ID.endsWith(".paid");
         Logger.d(TAG, "Alternative theme " + alternative);
         if (alternative) {
-            DetailsActivity.this.setTheme(R.style.AppThemeSecond);
+            this.setTheme(R.style.AppThemeSecond);
         } else {
-            DetailsActivity.this.setTheme(R.style.AppThemeFirst);
+            this.setTheme(R.style.AppThemeFirst);
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if(savedInstanceState != null) {
