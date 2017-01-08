@@ -22,6 +22,11 @@
         <activity android:name=".DetailsActivity"
             android:parentActivityName=".MainActivity" >
         </activity>
+        <service
+            android:name=".DownloadService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>
