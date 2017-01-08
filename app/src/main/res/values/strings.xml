@@ -11,4 +11,8 @@
     <string name="sectionMostPopular">Most popular movies</string>
     <string name="sectionNew">New movies</string>
     <string name="sectionMostVoted">Most voted movies</string>
+    <string name="content_authority">uco374386.movio2.pv256.fi.muni.cz.filmovarka.app</string>
+    <string name="saved">Saved</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

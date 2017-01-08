@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -19,11 +20,15 @@ import android.view.Menu;
 import android.view.Display;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.DiscoverListFragment;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.MovieFragment;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.SavedListFragment;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 public class MainActivity extends AppCompatActivity
@@ -51,13 +56,20 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
+        toggle.setDrawerIndicatorEnabled(false);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        ((Switch)findViewById(R.id.saved)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                updateListFragment(isChecked, toggle);
+            }
+        });
 
         Set<String> disabled = getDisabledCategories();
         for(int i = 0; i < categories_id.length; i++) {
@@ -67,15 +79,28 @@ public class MainActivity extends AppCompatActivity
             setupNavItem(item, categories_id[i], disabled.contains(categories_id[i]));
         }
 
+        if(savedInstanceState != null) {
+            return;
+        }
         if (findViewById(R.id.details) != null) {
-            if(savedInstanceState != null) {
-                return;
-            }
             MovieFragment displayFrag = new MovieFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.details, displayFrag).commit();
-
         }
+        updateListFragment(false, toggle);
+    }
+
+    private void updateListFragment(boolean showSaved, ActionBarDrawerToggle toggle) {
+        Fragment list;
+        if(showSaved) {
+            list = new SavedListFragment();
+            toggle.setDrawerIndicatorEnabled(false);
+        } else {
+            list = new DiscoverListFragment();
+            toggle.setDrawerIndicatorEnabled(true);
+        }
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.list1, list).commit();
     }
 
     public void openDetails(MovieResponse movie) {

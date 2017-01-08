@@ -1,9 +1,13 @@
-package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
+package uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,23 +18,30 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbHelper;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbManager;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.R;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 /**
  * Created by user on 10/9/16.
  */
 
-public class MovieFragment extends Fragment {
+public class MovieFragment extends Fragment implements LoaderManager.LoaderCallbacks<MovieResponse>{
 
     private static final String TAG = MovieFragment.class.getSimpleName();
 
     View rootView;
-
+    MovieResponse movie;
+    boolean saved = false;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
         rootView = inflater.inflate(R.layout.fragment_movie, container, false);
+
         return rootView;
     }
 
@@ -46,16 +57,40 @@ public class MovieFragment extends Fragment {
         if(data == null) {
             return;
         }
-        MovieResponse movie = data.getParcelable("movie");
+        movie = data.getParcelable("movie");
         if(movie == null) {
             return;
         }
 
-        TextView titleB = (TextView)rootView.findViewById(R.id.movieTitle);
-        titleB.setText(movie.title);
+        ((TextView)rootView.findViewById(R.id.movieTitle)).setText(movie.title);
+        ((TextView)rootView.findViewById(R.id.movieYear)).setText(MovieDbHelper.getDateString(movie.releaseDate));
+        ((TextView)rootView.findViewById(R.id.overview)).setText(movie.overview);
+        rootView.findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MovieDbManager manager = new MovieDbManager(getContext());
+                saved = !saved;
+                if(saved) {
+                    manager.createMovie(movie);
+                } else {
+                    manager.deleteMovie(movie);
+                }
+                updateFab(saved);
+            }
+        });
+        getLoaderManager().initLoader(1, null, this).forceLoad();
 
         Picasso.with(getContext()).load(movie.getBackdropUrl("w1280")).into((ImageView) rootView.findViewById(R.id.backdrop_image));
         Picasso.with(getContext()).load(movie.getPosterUrl("w342")).into((ImageView) rootView.findViewById(R.id.poster_image));
+    }
+
+    private void updateFab(boolean saved) {
+        FloatingActionButton fab = ((FloatingActionButton) rootView.findViewById(R.id.fab));
+        if(saved) {
+            fab.setImageResource(R.drawable.ic_favorite_white_24dp);
+        } else {
+            fab.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+        }
     }
 
     @Override
@@ -116,5 +151,36 @@ public class MovieFragment extends Fragment {
     public void onDetach() {
         Log.d(TAG, "onDetach");
         super.onDetach();
+    }
+
+    @Override
+    public Loader<MovieResponse> onCreateLoader(int id, Bundle args) {
+        return new MovieLoader(getContext(), movie.movieDbId);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<MovieResponse> loader, MovieResponse data) {
+        saved = data != null;
+        updateFab(saved);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<MovieResponse> loader) {
+
+    }
+
+    static class MovieLoader extends AsyncTaskLoader<MovieResponse> {
+        private long movieId;
+
+        public MovieLoader(Context context, long movieId) {
+            super(context);
+            this.movieId = movieId;
+        }
+
+        @Override
+        public MovieResponse loadInBackground() {
+            return new MovieDbManager(getContext()).getMovie((int)movieId);
+        }
+
     }
 }
