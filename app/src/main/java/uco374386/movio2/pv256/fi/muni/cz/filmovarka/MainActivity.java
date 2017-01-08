@@ -2,6 +2,7 @@ package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -15,12 +16,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.Display;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
@@ -74,7 +78,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void openDetails(Movie movie) {
+    public void openDetails(MovieResponse movie) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -179,8 +183,17 @@ public class MainActivity extends AppCompatActivity
         super.onStart();
     }
 
+    public static int getDisplayWidth(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return size.x;
+    }
+
     public static final String[] categories_id = {"28", "12", "16", "35", "80", "99", "18", "10751", "14", "36", "27", "10402", "9648",
             "10749", "878", "10770", "53", "10752", "37"};
     public static final String[] categories_names = {"Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary", "Drama", "Family",
             "Fantasy", "History", "Horror", "Music", "Mystery", "Romance", "Science Fiction", "TV Movie", "Thriller", "War", "Western"};
+
 }

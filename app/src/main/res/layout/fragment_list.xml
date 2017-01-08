@@ -4,18 +4,26 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <TextView
-        android:text="Action"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:textSize="24sp"
-        android:textAlignment="textStart"
-        android:padding="18dp"/>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvMovies"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
+
+    <TextView
+        android:id="@+id/empty_view_no_data"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/no_data" />
+
+    <TextView
+        android:id="@+id/empty_view_no_internet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/no_internet_connection" />
+
 </LinearLayout>

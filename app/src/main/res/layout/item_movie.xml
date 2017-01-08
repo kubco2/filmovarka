@@ -5,15 +5,14 @@
 
     <ImageView
         android:id="@+id/movie_item_image"
-        android:background="@color/colorPrimary"
+        android:background="@android:color/black"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        android:src="@drawable/placeholder"/>
+        android:layout_height="wrap_content"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:id="@+id/movie_item_info"
+                  android:id="@+id/movie_item_info_group"
                   android:orientation="horizontal"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"

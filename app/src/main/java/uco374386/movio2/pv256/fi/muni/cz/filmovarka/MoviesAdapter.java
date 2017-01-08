@@ -2,42 +2,67 @@ package uco374386.movio2.pv256.fi.muni.cz.filmovarka;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
-import java.util.List;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 /**
  * Created by user on 10/4/16.
  */
 
-public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
+public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = ListFragment.class.getSimpleName();
+    private static final int TYPE_SECTION_NAME = 0;
+    private static final int TYPE_MOVIE = 1;
+    private ArrayList<Object> mItems;
+    private Context mContext;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class SectionViewHolder extends RecyclerView.ViewHolder {
+        public TextView sectionTextView;
+
+        public SectionViewHolder(View itemView) {
+            super(itemView);
+            sectionTextView = (TextView) itemView.findViewById(R.id.movie_item_section);
+        }
+    }
+
+    public static class MovieViewHolder extends RecyclerView.ViewHolder {
+        public ImageView backdropImageView;
+        public ViewGroup infoGroup;
         public TextView nameTextView;
         public TextView ratingTextView;
 
-        public ViewHolder(View itemView) {
+        public MovieViewHolder(View itemView) {
             super(itemView);
-
+            backdropImageView = (ImageView) itemView.findViewById(R.id.movie_item_image);
+            infoGroup = (ViewGroup) itemView.findViewById(R.id.movie_item_info_group);
             nameTextView = (TextView) itemView.findViewById(R.id.movie_item_name);
             ratingTextView = (TextView) itemView.findViewById(R.id.movie_item_rating);
         }
     }
 
-    private List<Movie> mMovies;
-    private Context mContext;
-
-    public MoviesAdapter(Context context, List<Movie> movies) {
-        mMovies = movies;
+    public MoviesAdapter(Context context, ArrayList<Object> items) {
+        this.mItems = items;
         mContext = context;
+    }
+
+    public void setItems(ArrayList<Object> items) {
+        this.mItems = items;
+        notifyDataSetChanged();
     }
 
     private Context getContext() {
@@ -45,44 +70,72 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     }
 
     @Override
-    public MoviesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder");
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
+        View view;
+        switch (viewType) {
+            case TYPE_SECTION_NAME:
+                view = inflater.inflate(R.layout.item_section, parent, false);
+                return new SectionViewHolder(view);
 
-        View movieView = inflater.inflate(R.layout.item_movie, parent, false);
-
-        ViewHolder viewHolder = new ViewHolder(movieView);
-        return viewHolder;
+            case TYPE_MOVIE:
+                view = inflater.inflate(R.layout.item_movie, parent, false);
+                View img = view.findViewById(R.id.movie_item_image);
+                img.setMinimumHeight(MainActivity.getDisplayWidth(getContext())/16*9);
+                return new MovieViewHolder(view);
+        }
+        throw new IllegalStateException("viewType not supported");
     }
 
     @Override
-    public void onBindViewHolder(final MoviesAdapter.ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, final int position) {
         Log.d(TAG, "onBindViewHolder");
-        final Movie movie = mMovies.get(position);
 
-        TextView textView = viewHolder.nameTextView;
-        textView.setText(movie.title);
-        textView = viewHolder.ratingTextView;
-        textView.setText("" + movie.popularity);
+        switch (getItemViewType(position)) {
+            case TYPE_SECTION_NAME:
+                String sectionName = (String) mItems.get(position);
+                ((SectionViewHolder) viewHolder).sectionTextView.setText(sectionName);
+                break;
 
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)MoviesAdapter.this.getContext()).openDetails(movie);
-            }
-        });
+            case TYPE_MOVIE:
+                final MovieViewHolder movieViewHolder = (MovieViewHolder) viewHolder;
+                final MovieResponse movie = (MovieResponse) mItems.get(position);
+                TextView textView = movieViewHolder.nameTextView;
+                textView.setText(movie.title);
+                textView = movieViewHolder.ratingTextView;
+                textView.setText(String.format("%.1f", movie.voteAverage));
 
-        Bitmap myBitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.placeholder);
-        if (myBitmap != null && !myBitmap.isRecycled()) {
-            Palette.from(myBitmap).generate(new Palette.PaletteAsyncListener() {
-                @Override
-                public void onGenerated(Palette palette) {
-                    View movieItemInfo = viewHolder.itemView.findViewById(R.id.movie_item_info);
-                    movieItemInfo.setBackgroundColor(palette.getDarkVibrantColor(0x000000));
-                    movieItemInfo.getBackground().setAlpha(128);
-                }
-            });
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((MainActivity)MoviesAdapter.this.getContext()).openDetails(movie);
+                    }
+                });
+
+                Picasso.with(getContext()).load(movie.getBackdropUrl("w1280")).into(movieViewHolder.backdropImageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        Bitmap backdropBitmap = ((BitmapDrawable) movieViewHolder.backdropImageView.getDrawable()).getBitmap();
+                        if (backdropBitmap != null && !backdropBitmap.isRecycled()) {
+                            movieViewHolder.backdropImageView.setImageBitmap(backdropBitmap);
+                            Palette.from(backdropBitmap).generate(new Palette.PaletteAsyncListener() {
+                                @Override
+                                public void onGenerated(Palette palette) {
+                                    movieViewHolder.infoGroup.setBackgroundColor(palette.getDarkVibrantColor(0x000000));
+                                    movieViewHolder.infoGroup.getBackground().setAlpha(128);
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onError() {
+                        Log.e(TAG, "load backdrop failed.");
+                    }
+                });
+                break;
         }
     }
 
@@ -90,6 +143,14 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return mMovies.size();
+        if(mItems == null) {
+            return 0;
+        }
+        return mItems.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return mItems.get(position) instanceof String ? TYPE_SECTION_NAME : TYPE_MOVIE;
     }
 }
