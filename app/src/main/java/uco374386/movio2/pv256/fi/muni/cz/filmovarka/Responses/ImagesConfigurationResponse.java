@@ -23,4 +23,5 @@ public class ImagesConfigurationResponse {
     @SerializedName("still_sizes")
     public String[] stillSizes;
 
+
 }

@@ -28,27 +28,34 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.DiscoverListFragment;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.ListFragment;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.MovieFragment;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.SavedListFragment;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Sync.UpdaterSyncAdapter;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+        implements NavigationView.OnNavigationItemSelectedListener, ListFragment.ListClickable {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     public static final String SECONDARY_THEME = "secondary_theme";
     public static final String PROP_DISABLED_CATEGORIES = "disabled_categories";
     public static final String EXTR_CAT_ID = "category_id";
-
+    public static final String EXTRA_OPEN_SAVED = "openSaved";
+    public boolean openSaved = false;
+    public boolean tablet = false;
+    public boolean firstLoad = true;
+    private boolean selectedCategoriesChanged = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+        openSaved = getIntent().getExtras() != null && getIntent().getExtras().getBoolean(EXTRA_OPEN_SAVED, false);
         UpdaterSyncAdapter.initializeSyncAdapter(this);
         boolean alternative = this.getPreferences(Context.MODE_PRIVATE).getBoolean(MainActivity.SECONDARY_THEME, false);
         Log.d("MainActivity", "Alternative theme " + alternative);
@@ -63,17 +70,30 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                ListFragment listFragment = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.list1);
+                if(listFragment != null && listFragment instanceof DiscoverListFragment && selectedCategoriesChanged) {
+                    selectedCategoriesChanged = false;
+                    ((DiscoverListFragment) listFragment).reload();
+                }
+            }
+        };
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-        toggle.setDrawerIndicatorEnabled(false);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        ((Switch)findViewById(R.id.saved)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        Switch switchButton = ((Switch)findViewById(R.id.saved));
+        switchButton.setChecked(openSaved);
+        switchButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                updateListFragment(isChecked, toggle);
+            public void onClick(View v) {
+                openSaved = ((Switch)v).isChecked();
+                updateListFragment(toggle);
             }
         });
 
@@ -89,17 +109,29 @@ public class MainActivity extends AppCompatActivity
             return;
         }
         if (findViewById(R.id.details) != null) {
+            tablet = true;
             MovieFragment displayFrag = new MovieFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.details, displayFrag).commit();
         }
-        updateListFragment(false, toggle);
+        updateListFragment(toggle);
+        firstLoad = false;
     }
 
-    private void updateListFragment(boolean showSaved, ActionBarDrawerToggle toggle) {
+    private void updateListFragment(ActionBarDrawerToggle toggle) {
         Fragment list;
         ImageButton btn = (ImageButton)findViewById(R.id.refresh);
-        if(showSaved) {
+
+        if(!isSystemOnline()) {
+            findViewById(R.id.list1).setVisibility(View.GONE);
+            findViewById(R.id.empty_view_no_internet).setVisibility(View.VISIBLE);
+            return;
+        } else {
+            findViewById(R.id.list1).setVisibility(View.VISIBLE);
+            findViewById(R.id.empty_view_no_internet).setVisibility(View.GONE);
+        }
+
+        if(openSaved) {
             list = new SavedListFragment();
             btn.setVisibility(View.VISIBLE);
 
@@ -117,6 +149,9 @@ public class MainActivity extends AppCompatActivity
             toggle.setDrawerIndicatorEnabled(false);
         } else {
             list = new DiscoverListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(DiscoverListFragment.EXTRA_SHOW_FIRST, firstLoad && tablet);
+            list.setArguments(bundle);
             btn.setVisibility(View.GONE);
             btn.setOnClickListener(null);
             toggle.setDrawerIndicatorEnabled(true);
@@ -127,23 +162,17 @@ public class MainActivity extends AppCompatActivity
 
     public void openDetails(MovieResponse movie) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
         MovieFragment displayFrag = (MovieFragment) fragmentManager.findFragmentById(R.id.details);
-
         if (displayFrag == null) {
             Intent intent = new Intent(this, DetailsActivity.class);
             intent.putExtra("movie", movie);
+            intent.putExtra(EXTRA_OPEN_SAVED, openSaved);
+            finish();
             startActivity(intent);
         } else {
-            displayFrag = new MovieFragment();
             Bundle data = new Bundle();
             data.putParcelable("movie", movie);
-            displayFrag.setArguments(data);
-            fragmentTransaction.replace(R.id.details, displayFrag);
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
-
+            displayFrag.updateContent(data);
         }
     }
 
@@ -175,6 +204,7 @@ public class MainActivity extends AppCompatActivity
             disabled.add(id);
         }
         setDisabledCategories(disabled);
+        selectedCategoriesChanged = true;
         return false;
     }
 
@@ -230,17 +260,13 @@ public class MainActivity extends AppCompatActivity
         super.onStart();
     }
 
-    public static int getDisplayWidth(Context context) {
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        return size.x;
-    }
-
     public static final String[] categories_id = {"28", "12", "16", "35", "80", "99", "18", "10751", "14", "36", "27", "10402", "9648",
             "10749", "878", "10770", "53", "10752", "37"};
     public static final String[] categories_names = {"Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary", "Drama", "Family",
             "Fantasy", "History", "Horror", "Music", "Mystery", "Romance", "Science Fiction", "TV Movie", "Thriller", "War", "Western"};
 
+    @Override
+    public void onItemClicked(MovieResponse movie) {
+        openDetails(movie);
+    }
 }

@@ -1,7 +1,9 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments;
 
 import android.content.Context;
+import android.database.ContentObserver;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -10,7 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbContract;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbManager;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.R;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
 /**
@@ -18,11 +22,26 @@ import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
  */
 
 public class SavedListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<MovieResponse>>{
+    protected static final String TAG = SavedListFragment.class.getSimpleName();
+
 
     @Override
     public void onResume() {
         super.onResume();
-        getLoaderManager().initLoader(0, null, this).forceLoad();
+        reload();
+        getContext().getContentResolver().registerContentObserver(MovieDbContract.MovieEntry.CONTENT_URI, true, mObserver);
+    }
+
+    @Override
+    public void onDetach() {
+        getContext().getContentResolver().unregisterContentObserver(mObserver);
+        super.onDetach();
+    }
+
+    public void reload() {
+        if(getContext() != null) {
+            getLoaderManager().initLoader(0, null, this).forceLoad();
+        }
     }
 
     @Override
@@ -37,7 +56,11 @@ public class SavedListFragment extends ListFragment implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<List<MovieResponse>> loader, List<MovieResponse> data) {
-        mAdapter.setItems(new ArrayList<Object>(data));
+        if(data.isEmpty()) {
+            mAdapter.setItems(new ArrayList<Object>(Arrays.asList(new String[] {getResources().getString(R.string.no_data)})));
+        } else {
+            mAdapter.setItems(new ArrayList<Object>(data));
+        }
     }
 
     @Override
@@ -48,9 +71,6 @@ public class SavedListFragment extends ListFragment implements LoaderManager.Loa
 
     static class MoviesLoader extends AsyncTaskLoader<List<MovieResponse>> {
 
-        private List<MovieResponse> mData;
-        public boolean hasResult = false;
-
         public MoviesLoader(Context context) {
             super(context);
         }
@@ -59,6 +79,12 @@ public class SavedListFragment extends ListFragment implements LoaderManager.Loa
         public List<MovieResponse> loadInBackground() {
             return new MovieDbManager(getContext()).getAll();
         }
-
     }
+
+    private ContentObserver mObserver = new ContentObserver(new Handler()) {
+        @Override
+        public void onChange(boolean selfChange) {
+            reload();
+        }
+    };
 }

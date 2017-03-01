@@ -12,10 +12,16 @@ import com.google.gson.stream.MalformedJsonException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Network.MovieDbFactory;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Network.MovieDbService;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.ConfigurationResponse;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieListResponse;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
+
+import static uco374386.movio2.pv256.fi.muni.cz.filmovarka.MainActivity.PROP_DISABLED_CATEGORIES;
 
 /**
  * Created by user on 10/26/16.
@@ -25,6 +31,7 @@ public class DownloadService extends IntentService {
     public static final String TAG = DownloadService.class.getSimpleName();
     public static final String DOWNLOAD_SERVICE_INTENT = "uco374386.movio2.pv256.fi.muni.cz.filmovarka.DOWNLOAD_SERVICE";
     public static final String EXTRA_ACTION = "action";
+    public static final String EXTRA_SECTION = "section";
     public static final String EXTRA_RESPONSE = "response";
     public static final String EXTRA_RESPONSE_ERROR = "response_error";
     public static final String RESPONSE_ERROR_OFFLINE = "response_error.offline";
@@ -57,12 +64,13 @@ public class DownloadService extends IntentService {
             if(serverConfiguration == null) {
                 serverConfiguration = service.getConfiguration().execute().body();
             }
+            String disabledCategories = getDisabledCategories();
             switch (action) {
                 case ACTION_DOWNLOAD_LIST_MOST_POPULAR:
-                    broadcastMovies(service.getMostPopularMovies().execute().body(), action);
+                    broadcastMovies(service.getMostPopularMovies(disabledCategories).execute().body(), action, getResources().getString(R.string.sectionMostPopular));
                     break;
                 case ACTION_DOWNLOAD_LIST_MOST_VOTED:
-                    broadcastMovies(service.getMostVotedMovies().execute().body(), action);
+                    broadcastMovies(service.getMostVotedMovies(disabledCategories).execute().body(), action, getResources().getString(R.string.sectionMostVoted));
                     break;
                 default:
                     throw new IllegalArgumentException("action not recognized");
@@ -79,9 +87,13 @@ public class DownloadService extends IntentService {
         showDownloadFinishNotification();
     }
 
-    private void broadcastMovies(MovieListResponse movieList, String action) {
+    private void broadcastMovies(MovieListResponse movieList, String action, String sectionName) {
+        if(movieList == null) {
+            return;
+        }
         Intent intent = new Intent(DOWNLOAD_SERVICE_INTENT);
         intent.putExtra(EXTRA_ACTION, action);
+        intent.putExtra(EXTRA_SECTION, sectionName);
         movieList.setConfiguration(serverConfiguration);
         intent.putParcelableArrayListExtra(EXTRA_RESPONSE,
                 new ArrayList<MovieResponse>(Arrays.asList(movieList.getResults())));
@@ -143,5 +155,14 @@ public class DownloadService extends IntentService {
                 .setAutoCancel(true);
         NotificationManager notificationManager =  (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(0, n.build()); //0 udává číslo notifikace. Na některých zařízeních nefunguje jinačí int než 0.
+    }
+
+    public String getDisabledCategories() {
+        Set<String> cats = new HashSet<>(getApplicationContext().getSharedPreferences(MainActivity.class.getSimpleName(),MODE_PRIVATE).getStringSet(PROP_DISABLED_CATEGORIES, new HashSet<String>()));
+        String result = "";
+        for(String catid: cats) {
+            result += catid + ",";
+        }
+        return result.isEmpty() ? null : result.substring(0, result.length()-1);
     }
 }

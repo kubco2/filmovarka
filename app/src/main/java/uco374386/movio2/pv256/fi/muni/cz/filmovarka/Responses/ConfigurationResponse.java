@@ -17,17 +17,7 @@ public class ConfigurationResponse {
     @SerializedName("change_keys")
     public String[] changeKeys;
 
-    public String getMostSuitableBackdropSize(Context context) {
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        for(String choice: images.backdropSizes) {
-            if(Integer.parseInt(choice.substring(1)) > width) {
-                return choice;
-            }
-        }
-        return  images.backdropSizes[images.backdropSizes.length-2];
+    public String getImageBasePath() {
+        return images.secureBaseUrl;
     }
 }

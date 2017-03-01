@@ -25,18 +25,12 @@ import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
  * Created by user on 12/1/16.
  */
 public class ListFragment extends android.support.v4.app.Fragment {
-    protected static final String TAG = DiscoverListFragment.class.getSimpleName();
+    protected static final String TAG = ListFragment.class.getSimpleName();
     protected RecyclerView mRecyclerView;
     protected MoviesAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
     protected View rootView;
-    protected BroadcastReceiver mMovieListReceiver;
-    protected ArrayList<Object> items = new ArrayList<>(14);
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-    }
+    protected ListClickable mCallback;
 
     @Override
     public void onInflate(Context context, AttributeSet attrs, Bundle savedInstanceState) {
@@ -48,6 +42,13 @@ public class ListFragment extends android.support.v4.app.Fragment {
     public void onAttach(Context context) {
         Log.d(TAG, "onAttach");
         super.onAttach(context);
+        try {
+            mCallback = (ListClickable) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement ListClickable");
+        }
+
     }
 
     @Override
@@ -117,15 +118,10 @@ public class ListFragment extends android.support.v4.app.Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_list, container, false);
         rootView.setTag(TAG);
 
-        if(!((MainActivity)getActivity()).isSystemOnline()) {
-            mRecyclerView.setVisibility(View.GONE);
-            rootView.findViewById(R.id.empty_view_no_internet).setVisibility(View.VISIBLE);
-        }
-
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rvMovies);
         setRecyclerViewLayoutManager();
 
-        mAdapter = new MoviesAdapter(getContext(), new ArrayList<>());
+        mAdapter = new MoviesAdapter(getContext(), new ArrayList<>(), mCallback);
         mRecyclerView.setAdapter(mAdapter);
 
         this.rootView = rootView;
@@ -136,5 +132,9 @@ public class ListFragment extends android.support.v4.app.Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+    }
+
+    public interface ListClickable {
+        void onItemClicked(MovieResponse movie);
     }
 }

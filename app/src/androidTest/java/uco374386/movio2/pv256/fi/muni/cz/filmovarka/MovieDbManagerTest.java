@@ -5,6 +5,7 @@ import android.test.AndroidTestCase;
 import java.util.Date;
 import java.util.List;
 
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbContract;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbManager;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
 
@@ -21,7 +22,7 @@ public class MovieDbManagerTest extends AndroidTestCase {
     protected void setUp() throws Exception {
         mManager = new MovieDbManager(mContext);
         mContext.getContentResolver().delete(
-                MovieResponse.MovieEntry.CONTENT_URI,
+                MovieDbContract.MovieEntry.CONTENT_URI,
                 null,
                 null
         );
@@ -30,7 +31,7 @@ public class MovieDbManagerTest extends AndroidTestCase {
     @Override
     public void tearDown() throws Exception {
         mContext.getContentResolver().delete(
-                MovieResponse.MovieEntry.CONTENT_URI,
+                MovieDbContract.MovieEntry.CONTENT_URI,
                 null,
                 null
         );
@@ -99,6 +100,21 @@ public class MovieDbManagerTest extends AndroidTestCase {
         assertEquals("not all movies saved or getAll doesnt work", list.get(0).movieDbId, movie1.movieDbId);
         assertEquals("not all movies saved or getAll doesnt work", list.get(1).movieDbId, movie2.movieDbId);
         assertEquals("not all movies saved or getAll doesnt work", list.get(2).movieDbId, movie3.movieDbId);
+    }
+
+    public void testChangeState() throws Exception{
+        MovieResponse movie1 = createMovie();
+        MovieResponse movieSaved = mManager.getMovie(movie1.movieDbId);
+        assertNull("movie should not be saved or getMovie doesnt work right", movieSaved);
+        mManager.changeSaveState(movie1, false);
+        movieSaved = mManager.getMovie(movie1.movieDbId);
+        assertNull("movie should not be saved or getMovie/changeSaveState doesnt work right", movieSaved);
+        mManager.changeSaveState(movie1, true);
+        movieSaved = mManager.getMovie(movie1.movieDbId);
+        assertNotNull("movie should be saved or getMovie/changeSaveState doesnt work right", movieSaved);
+        mManager.changeSaveState(movie1, false);
+        movieSaved = mManager.getMovie(movie1.movieDbId);
+        assertNull("movie should not be saved or getMovie/changeSaveState doesnt work right", movieSaved);
     }
 
     public MovieResponse createMovie() {

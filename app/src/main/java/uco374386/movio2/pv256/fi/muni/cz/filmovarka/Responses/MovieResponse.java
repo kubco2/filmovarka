@@ -1,6 +1,7 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses;
 
 import android.content.ContentUris;
+import android.graphics.Movie;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -10,40 +11,29 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbContract;
+
 /**
  * Created by user on 10/23/16.
  */
 
-public class MovieResponse implements Parcelable {
+public class MovieResponse implements Parcelable, Cloneable {
 
-    public static final String CONTENT_AUTHORITY = "uco374386.movio2.pv256.fi.muni.cz.filmovarka.app";
-    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
-    public static final String PATH_MOVIE = "movie";
     public static final String DATE_FORMAT = "yyyy-MM-dd";
 
 
     @SerializedName("poster_path")
     public String coverPath;
-    public boolean adult;
     public String overview;
     @SerializedName("release_date")
     public Date releaseDate;
-    @SerializedName("genre_ids")
-    public int[] genreIds;
     @SerializedName("id")
     public Integer movieDbId;
     public Long localDbId;
-    @SerializedName("original_title")
-    public String originalTitle;
-    @SerializedName("original_language")
-    public String originalLanguage;
     public String title;
     @SerializedName("backdrop_path")
     public String backdropPath;
     public Float popularity;
-    @SerializedName("vote_count")
-    public int voteCount;
-    public boolean video;
     @SerializedName("vote_average")
     public Float voteAverage;
     public String imageBasePath;
@@ -106,30 +96,6 @@ public class MovieResponse implements Parcelable {
         }
     };
 
-    public static final class MovieEntry implements BaseColumns {
-
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIE).build();
-
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
-
-        public static final String TABLE_NAME = "movie";
-
-        public static final String COLUMN_MOVIEDB_ID = "moviedb_id";
-        public static final String COLUMN_TITLE_TEXT = "title";
-        public static final String COLUMN_POPULARITY_TEXT = "popularity";
-        public static final String COLUMN_VOTE_TEXT = "vote";
-        public static final String COLUMN_RELEASE_DATE_TEXT = "release_date";
-        public static final String COLUMN_COVER_PATH_TEXT = "cover_path";
-        public static final String COLUMN_BACKDROP_PATH_TEXT = "poster_path";
-        public static final String COLUMN_IMAGE_BASE = "image_base";
-        public static final String COLUMN_OVERVIEW_TEXT = "overview";
-
-        public static Uri buildMovieUri(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
-        }
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -168,5 +134,14 @@ public class MovieResponse implements Parcelable {
         result = 31 * result + (voteAverage != null ? voteAverage.hashCode() : 0);
         result = 31 * result + (imageBasePath != null ? imageBasePath.hashCode() : 0);
         return result;
+    }
+
+    public MovieResponse createClone() {
+        try {
+            return (MovieResponse) this.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
