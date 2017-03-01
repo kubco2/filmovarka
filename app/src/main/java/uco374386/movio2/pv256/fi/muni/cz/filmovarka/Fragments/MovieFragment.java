@@ -23,6 +23,7 @@ import com.squareup.picasso.Picasso;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbHelper;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbManager;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Logger;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.MainActivity;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.R;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
@@ -43,14 +44,14 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView");
+        Logger.d(TAG, "onCreateView");
         rootView = inflater.inflate(R.layout.fragment_movie, container, false);
         return rootView;
     }
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume");
+        Logger.d(TAG, "onResume");
         super.onResume();
     }
 
@@ -91,63 +92,63 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+        Logger.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
     }
 
     @Override
     public void onInflate(Context context, AttributeSet attrs, Bundle savedInstanceState) {
-        Log.d(TAG, "onInflate");
+        Logger.d(TAG, "onInflate");
         super.onInflate(context, attrs, savedInstanceState);
     }
 
     @Override
     public void onAttach(Context context) {
-        Log.d(TAG, "onAttach");
+        Logger.d(TAG, "onAttach");
         super.onAttach(context);
         mLoader = (MovieLoader) getLoaderManager().initLoader(1, null, this);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onViewCreated");
+        Logger.d(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
         updateContent(savedInstanceState != null ? savedInstanceState : getArguments());
     }
 
     @Override
     public void onStart() {
-        Log.d(TAG, "onStart");
+        Logger.d(TAG, "onStart");
         super.onStart();
     }
 
     @Override
     public void onPause() {
-        Log.d(TAG, "onPause");
+        Logger.d(TAG, "onPause");
         super.onPause();
     }
 
     @Override
     public void onStop() {
-        Log.d(TAG, "onStop");
+        Logger.d(TAG, "onStop");
         super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy");
+        Logger.d(TAG, "onDestroy");
         super.onDestroy();
     }
 
     @Override
     public void onDestroyView() {
-        Log.d(TAG, "onDestroyView");
+        Logger.d(TAG, "onDestroyView");
         super.onDestroyView();
     }
 
     @Override
     public void onDetach() {
-        Log.d(TAG, "onDetach");
+        Logger.d(TAG, "onDetach");
         super.onDetach();
     }
 

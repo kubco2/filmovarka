@@ -20,10 +20,11 @@ import java.io.IOException;
 import java.util.List;
 
 import retrofit2.Response;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.BuildConfig;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbContract;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database.MovieDbManager;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Logger;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.MainActivity;
-import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Network.MovieDbFactory;
-import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Network.MovieDbService;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.R;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.ConfigurationResponse;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
@@ -49,7 +50,7 @@ public class UpdaterSyncAdapter extends AbstractThreadedSyncAdapter {
      */
     public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
         Account account = getSyncAccount(context);
-        String authority = context.getString(R.string.content_authority);
+        String authority = MovieDbContract.CONTENT_AUTHORITY;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // we can enable inexact timers in our periodic sync
             SyncRequest request = new SyncRequest.Builder()
@@ -72,7 +73,7 @@ public class UpdaterSyncAdapter extends AbstractThreadedSyncAdapter {
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        ContentResolver.requestSync(getSyncAccount(context), context.getString(R.string.content_authority), bundle);
+        ContentResolver.requestSync(getSyncAccount(context), MovieDbContract.CONTENT_AUTHORITY, bundle);
     }
 
     public static void initializeSyncAdapter(Context context) {
@@ -92,7 +93,7 @@ public class UpdaterSyncAdapter extends AbstractThreadedSyncAdapter {
         AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
 
         // Create the account type and default account
-        Account newAccount = new Account(context.getString(R.string.app_name), context.getString(R.string.sync_account_type));
+        Account newAccount = new Account(context.getString(R.string.app_name), BuildConfig.ACCOUNT_TYPE);
 
         // If the password doesn't exist, the account doesn't exist
         if (null == accountManager.getPassword(newAccount)) {
@@ -117,7 +118,7 @@ public class UpdaterSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private static void onAccountCreated(Account newAccount, Context context) {
-        Log.i(TAG, "onAccountCreated - sync configured");
+        Logger.i(TAG, "onAccountCreated - sync configured");
         /*
          * Since we've created an account
          */
@@ -126,7 +127,7 @@ public class UpdaterSyncAdapter extends AbstractThreadedSyncAdapter {
         /*
          * Without calling setSyncAutomatically, our periodic sync will not be enabled.
          */
-        ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
+        ContentResolver.setSyncAutomatically(newAccount, MovieDbContract.CONTENT_AUTHORITY, true);
 
         /*
          * Finally, let's do a sync to get things started
@@ -136,10 +137,10 @@ public class UpdaterSyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        Log.i(TAG, "onPerformSync");
+        Logger.i(TAG, "onPerformSync");
         boolean hasChanges = false;
         MovieDbManager mManager = new MovieDbManager(getContext());
-        MovieDbService mService = MovieDbFactory.getMovieDbService();
+        uco374386.movio2.pv256.fi.muni.cz.filmovarka.Network.MovieDbManager mService = new uco374386.movio2.pv256.fi.muni.cz.filmovarka.Network.MovieDbManager();
         List<MovieResponse> list = mManager.getAll();
         if(list.isEmpty()) {
             return;

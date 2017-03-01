@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Filmovarka</string>
+    <string name="navigation_drawer_head">Kategórie</string>
+    <string name="navigation_drawer_open">Otvoriť menu</string>
+    <string name="navigation_drawer_close">Zatvoriť menu</string>
+    <string name="no_internet_connection">Žiadny prístup na internet</string>
+    <string name="no_data">Prázdny zoznam</string>
+    <string name="parse_error">Chyba při načítání :-(</string>
+    <string name="download_start">Sťahovanie začalo</string>
+    <string name="download_finish">Sťahovanie skončilo</string>
+    <string name="sectionMostPopular">Najpopulárnejšie</string>
+    <string name="sectionNew">Nové</string>
+    <string name="sectionMostVoted">Najviac hodnotené filmy</string>
+    <string name="saved">Uložené</string>
+    <string name="yes">Ano</string>
+    <string name="no">Nie</string>
+    <string name="sync_changes">Novinky v uloženych filmoch</string>
+    <string name="refresh">Obnoviť</string>
+    <string name="request_sync">Synchronizujem uložené filmy</string>
+</resources>

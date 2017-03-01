@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content">
+    <Switch
+        android:text="@string/saved"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/saved"
+        android:checked="false"
+        android:textColor="@android:color/white"
+        android:textOn="@string/yes"
+        android:textOff="@string/no"/>
+</RelativeLayout>

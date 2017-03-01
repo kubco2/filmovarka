@@ -1,15 +1,18 @@
 package uco374386.movio2.pv256.fi.muni.cz.filmovarka.Database;
 
 import android.content.ContentUris;
+import android.content.Context;
 import android.net.Uri;
 import android.provider.BaseColumns;
+
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.BuildConfig;
 
 /**
  * Created by user on 12/4/16.
  */
 
 public class MovieDbContract {
-    public static final String CONTENT_AUTHORITY = "uco374386.movio2.pv256.fi.muni.cz.filmovarka.app";
+    public static final String CONTENT_AUTHORITY = BuildConfig.AUTHORITY;
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_MOVIE = "movie";
 

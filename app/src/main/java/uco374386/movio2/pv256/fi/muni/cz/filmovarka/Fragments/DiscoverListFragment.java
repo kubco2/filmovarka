@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.DownloadService;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Logger;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.MainActivity;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.R;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
@@ -30,7 +31,7 @@ public class DiscoverListFragment extends ListFragment {
     private boolean loadNext = false;
     @Override
     public void onAttach(Context context) {
-        Log.d(TAG, "onAttach");
+        Logger.d(TAG, "onAttach");
         super.onAttach(context);
     }
 
@@ -54,7 +55,7 @@ public class DiscoverListFragment extends ListFragment {
 
     @Override
     public void onDetach() {
-        Log.d(TAG, "onDetach");
+        Logger.d(TAG, "onDetach");
         Intent intent = new Intent(getContext(), DownloadService.class);
         getContext().stopService(intent);
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mMovieListReceiver);

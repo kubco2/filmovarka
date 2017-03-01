@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.MovieFragment;
@@ -16,10 +15,17 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+        Logger.d(TAG, "onCreate");
+        boolean alternative = BuildConfig.APPLICATION_ID.endsWith(".paid");
+        Logger.d(TAG, "Alternative theme " + alternative);
+        if (alternative) {
+            this.setTheme(R.style.AppThemeSecond);
+        } else {
+            this.setTheme(R.style.AppThemeFirst);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if(savedInstanceState != null) {
@@ -31,43 +37,43 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onPostCreate");
+        Logger.d(TAG, "onPostCreate");
         super.onPostCreate(savedInstanceState);
     }
 
     @Override
     protected void onStop() {
-        Log.d(TAG, "onStop");
+        Logger.d(TAG, "onStop");
         super.onStop();
     }
 
     @Override
     protected void onPostResume() {
-        Log.d(TAG, "onPostResume");
+        Logger.d(TAG, "onPostResume");
         super.onPostResume();
     }
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy");
+        Logger.d(TAG, "onDestroy");
         super.onDestroy();
     }
 
     @Override
     protected void onPause() {
-        Log.d(TAG, "onPause");
+        Logger.d(TAG, "onPause");
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume");
+        Logger.d(TAG, "onResume");
         super.onResume();
     }
 
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart");
+        Logger.d(TAG, "onStart");
         super.onStart();
     }
 

@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Logger;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.MainActivity;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.R;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
@@ -85,7 +86,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.d(TAG, "onCreateViewHolder");
+        Logger.d(TAG, "onCreateViewHolder");
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view;
@@ -104,7 +105,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, final int position) {
-        Log.d(TAG, "onBindViewHolder");
+        Logger.d(TAG, "onBindViewHolder");
 
         switch (getItemViewType(position)) {
             case TYPE_SECTION_NAME:
@@ -145,7 +146,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                     @Override
                     public void onError() {
-                        Log.e(TAG, "load backdrop failed.");
+                        Logger.e(TAG, "load backdrop failed.");
                     }
                 });
                 break;
