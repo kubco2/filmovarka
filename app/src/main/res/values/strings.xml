@@ -15,4 +15,8 @@
     <string name="saved">Saved</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="sync_account_type">filmovarkaSync</string>
+    <string name="sync_changes">News in your saved movies</string>
+    <string name="refresh">Refresh</string>
+    <string name="request_sync">Syncing saved movies</string>
 </resources>

@@ -129,4 +129,44 @@ public class MovieResponse implements Parcelable {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MovieResponse that = (MovieResponse) o;
+
+        if (coverPath != null ? !coverPath.equals(that.coverPath) : that.coverPath != null)
+            return false;
+        if (overview != null ? !overview.equals(that.overview) : that.overview != null)
+            return false;
+        if (releaseDate != null ? !releaseDate.equals(that.releaseDate) : that.releaseDate != null)
+            return false;
+        if (movieDbId != null ? !movieDbId.equals(that.movieDbId) : that.movieDbId != null)
+            return false;
+        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+        if (backdropPath != null ? !backdropPath.equals(that.backdropPath) : that.backdropPath != null)
+            return false;
+        if (popularity != null ? !popularity.equals(that.popularity) : that.popularity != null)
+            return false;
+        if (voteAverage != null ? !voteAverage.equals(that.voteAverage) : that.voteAverage != null)
+            return false;
+        return imageBasePath != null ? imageBasePath.equals(that.imageBasePath) : that.imageBasePath == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = coverPath != null ? coverPath.hashCode() : 0;
+        result = 31 * result + (overview != null ? overview.hashCode() : 0);
+        result = 31 * result + (releaseDate != null ? releaseDate.hashCode() : 0);
+        result = 31 * result + (movieDbId != null ? movieDbId.hashCode() : 0);
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (backdropPath != null ? backdropPath.hashCode() : 0);
+        result = 31 * result + (popularity != null ? popularity.hashCode() : 0);
+        result = 31 * result + (voteAverage != null ? voteAverage.hashCode() : 0);
+        result = 31 * result + (imageBasePath != null ? imageBasePath.hashCode() : 0);
+        return result;
+    }
 }

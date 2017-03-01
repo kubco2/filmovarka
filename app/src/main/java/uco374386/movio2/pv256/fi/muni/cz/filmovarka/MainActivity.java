@@ -19,9 +19,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.Display;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,6 +34,7 @@ import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.DiscoverListFragme
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.MovieFragment;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Fragments.SavedListFragment;
 import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Responses.MovieResponse;
+import uco374386.movio2.pv256.fi.muni.cz.filmovarka.Sync.UpdaterSyncAdapter;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+        UpdaterSyncAdapter.initializeSyncAdapter(this);
         boolean alternative = this.getPreferences(Context.MODE_PRIVATE).getBoolean(MainActivity.SECONDARY_THEME, false);
         Log.d("MainActivity", "Alternative theme " + alternative);
         if (alternative) {
@@ -92,11 +98,27 @@ public class MainActivity extends AppCompatActivity
 
     private void updateListFragment(boolean showSaved, ActionBarDrawerToggle toggle) {
         Fragment list;
+        ImageButton btn = (ImageButton)findViewById(R.id.refresh);
         if(showSaved) {
             list = new SavedListFragment();
+            btn.setVisibility(View.VISIBLE);
+
+            btn.setBackgroundResource(R.color.colorPrimary);
+            btn.setImageResource(R.drawable.ic_refresh_white_24dp);
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "requestSync");
+                    UpdaterSyncAdapter.syncImmediately(getApplicationContext());
+                    Toast toast = Toast.makeText(getApplicationContext(), R.string.request_sync, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            });
             toggle.setDrawerIndicatorEnabled(false);
         } else {
             list = new DiscoverListFragment();
+            btn.setVisibility(View.GONE);
+            btn.setOnClickListener(null);
             toggle.setDrawerIndicatorEnabled(true);
         }
         getSupportFragmentManager().beginTransaction()
